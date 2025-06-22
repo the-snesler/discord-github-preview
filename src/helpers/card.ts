@@ -31,9 +31,9 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
     user.avatarDecorationURL = null;
   }
   // Handle theme color settings
-  let colors = darkColors;
+  let colors = { ...darkColors };
   if (options.themeType === "light" || options.themeType === "nitroLight") {
-    colors = lightColors;
+    colors = { ...lightColors };
   } else if (options.themeType === "custom") {
     colors = {
       ...darkColors,
