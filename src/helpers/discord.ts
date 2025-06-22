@@ -1,6 +1,12 @@
 import { Client, Presence } from "discord.js";
 import { URItoBase64 } from "./utils";
 
+export interface ServerTag {
+  identity_guild_id: string;
+  identity_enabled: boolean;
+  tag: string;
+  badge: string;
+}
 export interface UserProperties {
   username: string;
   displayName: string;
@@ -11,6 +17,7 @@ export interface UserProperties {
   bannerURL: Promise<string | null> | null;
   accentColor: string | null;
   presence: Presence | null;
+  serverTag?: ServerTag;
 }
 
 export const validateId = (id: string) => {
@@ -38,6 +45,7 @@ function getAvatarDecorationURL(client: Client<true>, asset: string, size: numbe
 // Fetches user info. Uses animation/width values to determine which images to use for avatar, decoration, and banner.
 export async function fetchUserInfo(client: Client<true>, userID: string, animated = false, width = 500): Promise<UserProperties | null> {
   const guildID = process.env.DISCORD_GUILD_ID as string;
+  const rawResponse = client.rest.get(`/users/${userID}`) as Promise<{ primary_guild?: ServerTag }>;
   const member = await client.guilds.cache.get(guildID)?.members.fetch({ user: userID, force: true });
   if (!member) {
     return null;
@@ -58,6 +66,7 @@ export async function fetchUserInfo(client: Client<true>, userID: string, animat
     bannerURL: bannerURL ? URItoBase64(bannerURL) : null,
     accentColor: member.user.hexAccentColor || null,
     presence: member.presence,
+    serverTag: await rawResponse.then(res => res.primary_guild),
   }
   return userProperties;
 }
