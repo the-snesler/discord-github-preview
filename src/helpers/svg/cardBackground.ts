@@ -8,14 +8,17 @@ export function cardBackground(colors: ColorTheme, nitro: boolean, totalHeight: 
     return `<g>
 <rect x="0" y="0" width="700" height="${totalHeight}" rx="35px" style="fill:url(#nitroGradient);"/>
 <g clip-path="url(#innerBackground)">
-  <rect x="5" y="5" width="690" height="${totalHeight - 10}" style="fill:url(#nitroOverlay);" />
+  <mask id="not-banner">
+    <circle cx="100" cy="${bannerHeight}" r="93" fill="white"/>
+  </mask>
+  <rect x="5" y="${bannerHeight}" width="690" height="${totalHeight - bannerHeight - 5}" style="fill:url(#nitroOverlay);" />
+  <rect x="5" y="5" width="690" height="${bannerHeight - 5}" style="fill:url(#nitroOverlay); mask:url(#not-banner);" />
   <g>
     <mask id="banner">
       <rect x="0" y="0" width="700" height="${bannerHeight}" fill="white"/>
       <circle cx="100" cy="${bannerHeight}" r="93" fill="black"/>
     </mask>
     <g mask="url(#banner)">
-      <rect x="5" y="5" width="690" height="${bannerHeight - 5}" style="fill:${banner ? colors.secondaryBackground : user.accentColor || bgColor};" />
       ${banner ? `<image x="5" y="5" xlink:href="${banner}" height="${bannerHeight - 5}" width="690" preserveAspectRatio="xMidYMid slice" />` : ''}
     </g>
   </g>

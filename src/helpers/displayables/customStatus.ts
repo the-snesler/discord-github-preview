@@ -1,7 +1,8 @@
 import { Activity } from "discord.js";
 import { ActivityDisplay, ColorTheme } from "../../types";
-import { bannerHeight, fontFamily } from "../card";
+import { bannerHeight } from "../card";
 import { URItoBase64 } from "../utils";
+import { fontFamily } from "../fonts";
 
 export const customStatus: ActivityDisplay = {
   height: 0,

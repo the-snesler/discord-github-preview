@@ -1,5 +1,5 @@
 import { ColorTheme } from "../../types";
-import { fontFamily } from "../card";
+import { fontFamily } from "../fonts";
 
 export function animatedDuration(strings: string[], x: number, y: number, colors: ColorTheme): string {
   // Each <text> element is rendered at the same position.

@@ -1,9 +1,10 @@
 import { Activity } from "discord.js";
 import { ActivityDisplay, ColorTheme } from "../../types";
-import { fontFamily, sanitizeString } from "../card";
+import { sanitizeString } from "../card";
 import { spotifyGreen } from "../themes";
 import { URItoBase64, truncate, formatDuration } from "../utils";
 import { animatedDuration } from "../svg/animatedDuration";
+import { fontFamily } from "../fonts";
 
 // Spotify-specific activity handler with album art and progress bar
 export const spotifyActivity: ActivityDisplay = {

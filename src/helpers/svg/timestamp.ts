@@ -1,5 +1,5 @@
 import { ColorTheme } from "../../types";
-import { fontFamily } from "../card";
+import { fontFamily } from "../fonts";
 import { statusColors } from "../themes";
 import { prettyDuration } from "../utils";
 import { animatedText } from "./animatedDuration";

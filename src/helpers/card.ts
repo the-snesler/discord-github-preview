@@ -1,5 +1,5 @@
 import { UserProperties } from "./discord";
-import { mixColors } from "./utils";
+import { mixColors, setOpacity } from "./utils";
 import { darkColors, lightColors, statusColors } from "./themes";
 import { ActivityDisplay, CardOptions } from "../types";
 import { cardBackground } from "./svg/cardBackground";
@@ -8,8 +8,8 @@ import { customStatus } from "./displayables/customStatus";
 import { richPresence } from "./displayables/richPresence";
 import { genericActivity } from "./displayables/genericActivity";
 import { aboutMe, aboutMeHeight } from "./svg/aboutMe";
+import { GG_SANS_FONT_FACE, fontFamily } from "./fonts";
 
-export const fontFamily = "Calibri,Tahoma,Segoe UI,sans-serif";
 export const bannerHeight = 180;
 const userHeaderHeight = 180;
 
@@ -41,6 +41,9 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
     }
   }
   const isNitroProfile = options.themeType === "nitroDark" || options.themeType === "nitroLight";
+  if (isNitroProfile) {
+    colors.secondaryBackground = setOpacity(colors.background, 0.7);
+  }
   // Generate promises all at once so they can be awaited in parallel (activities use promises to load their images)
   const activityPromises: Promise<string>[] = []
   let currentHeight = bannerHeight + userHeaderHeight;
@@ -74,6 +77,9 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="${options.width}px" height="100%" viewBox="0 0 700 ${totalHeight}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
   <defs>
+    <style>
+      ${GG_SANS_FONT_FACE}
+    </style>
     <clipPath id="background">
       <rect x="0" y="0" width="700" height="${totalHeight}" rx="35px" />
     </clipPath>
@@ -131,7 +137,7 @@ ${decoration ? `
 </g>
 
 <g>
-  <circle cx="160" cy="${bannerHeight + 60}" r="30" style="fill:${colors.background};"/>
+  <circle cx="160" cy="${bannerHeight + 60}" r="30" style="fill:${mixColors(colors.background, options.nitroColor1, 0.85) };"/>
   <rect x="140" y="${bannerHeight + 40}" width="40" height="40" style="fill:${statusColors[statusString]}; mask:url('#status-${statusString}');"/>
 </g>
 

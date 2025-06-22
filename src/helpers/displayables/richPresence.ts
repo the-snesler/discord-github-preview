@@ -1,9 +1,10 @@
 import { Activity } from "discord.js";
 import { ActivityDisplay, ColorTheme } from "../../types";
-import { fontFamily, sanitizeString } from "../card";
+import { sanitizeString } from "../card";
 import { timestampSVG } from "../svg/timestamp";
 import { URItoBase64 } from "../utils";
 import { roundImageSize } from "../discord";
+import { fontFamily } from "../fonts";
 
 export const richPresence: ActivityDisplay = {
   height: 140,

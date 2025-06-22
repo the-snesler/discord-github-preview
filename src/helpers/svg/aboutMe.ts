@@ -1,5 +1,6 @@
 import { ColorTheme } from "../../types";
-import { sanitizeString, fontFamily } from "../card";
+import { sanitizeString } from "../card";
+import { fontFamily } from "../fonts";
 
 export function aboutMeHeight(text: string) {
   return Math.max(120, 70 + Math.ceil(text.length / 40) * 24);

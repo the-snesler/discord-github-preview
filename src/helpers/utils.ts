@@ -45,27 +45,48 @@ export function prettyDuration(duration: number) {
   return string.join(":");
 }
 
-export function mixColors(color1: string, color2: string, strength: number): string {
-  const hexToRgb = (hex: string) => {
-    const bigint = parseInt(hex.slice(1), 16);
-    return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
-  };
-  const rgbToHex = (r: number, g: number, b: number) =>
-    `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-
-  const [r1, g1, b1] = hexToRgb(color1);
-  const [r2, g2, b2] = hexToRgb(color2);
-  const mixedR = Math.round((r1 * strength + r2 * (1 - strength)));
-  const mixedG = Math.round((g1 * strength + g2 * (1 - strength)));
-  const mixedB = Math.round((b1 * strength + b2 * (1 - strength)));
-
-  return rgbToHex(mixedR, mixedG, mixedB);
-}
-
 export const truncate = (text: string, maxLen: number) => (text.length <= maxLen) ? text : text.substring(0, maxLen) + "...";
+
 export const formatDuration = (time: number) => {
   const minutes = Math.floor(time / 60000);
   const seconds = Math.floor((time % 60000) / 1000);
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
+const hexToRgb = (hex: string) => {
+  const bigint = parseInt(hex.slice(1), 16);
+  return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+};
+
+const rgbToHex = (r: number, g: number, b: number, a?: number) => {
+  const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  return a !== undefined && a !== 1 ? `${hex}${Math.round(a * 255).toString(16).padStart(2, '0')}` : hex;
+};
+
+/**
+ * Mixes two hex colors together based on a strength value. Supports transparency in said hex colors
+ * @param color1 - The first color in hex format (e.g., "#FF5733")
+ * @param color2 - The second color in hex format (e.g., "#33FF57AA")
+ * @param strength - A value between 0 and 1 representing the mix strength
+ * @returns - The mixed color in hex format. If either color had an alpha channel, the result will also have an alpha channel.
+ */
+export const mixColors = (color1: string, color2: string, strength: number): string => {
+  const [r1, g1, b1] = hexToRgb(color1);
+  const [r2, g2, b2] = hexToRgb(color2);
+
+  const mixedR = Math.round(r1 * strength + r2 * (1 - strength));
+  const mixedG = Math.round(g1 * strength + g2 * (1 - strength));
+  const mixedB = Math.round(b1 * strength + b2 * (1 - strength));
+
+  // Check for alpha channel in color1 and color2, default to 1
+  const alpha1 = parseInt(color1.slice(7, 9), 16) / 255 || 1;
+  const alpha2 = parseInt(color2.slice(7, 9), 16) / 255 || 1;
+  const alpha = Math.round((alpha1 * strength + alpha2 * (1 - strength)) * 100) / 100; // Round to 2 decimal places
+
+  return rgbToHex(mixedR, mixedG, mixedB, alpha);
+}
+
+export const setOpacity = (color: string, opacity: number): string => {
+  const [r, g, b] = hexToRgb(color);
+  return rgbToHex(r, g, b, opacity);
+}
