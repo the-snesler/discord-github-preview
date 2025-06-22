@@ -80,11 +80,6 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     
-    .column:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-    
     .preview {
       background-color: var(--discord-bg-tertiary);
       padding: 20px;
@@ -128,6 +123,13 @@
     textarea {
       min-height: 120px;
       resize: vertical;
+    }
+
+    input:disabled, textarea:disabled {
+      background-color: var(--discord-bg-tertiary);
+      color: var(--discord-text-muted);
+      cursor: not-allowed;
+      opacity: 0.7;
     }
     
     button {
@@ -224,14 +226,48 @@
         min-width: 100%;
       }
     }
+
+    .description {
+      font-size: 16px;
+      color: var(--discord-text-muted);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .callout {
+      background-color: var(--discord-bg-secondary);
+      padding: 15px;
+      border-radius: var(--discord-radius);
+      margin-bottom: 20px;
+      color: var(--discord-text-muted);
+      font-size: 14px;
+    }
+    .callout a {
+      color: var(--discord-primary);
+      text-decoration: none;
+    }
+    .callout a:hover {
+      text-decoration: underline;
+    }
+    .callout-warn {
+      background-color: #ff6b6b;
+      color: #000000;
+    }
+    .callout-warn a {
+      color: #981313;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Discord Profile Preview Generator</h1>
-    
+    <p class="description">Generate a preview of your Discord profile for use on GitHub or other platforms.</p>
+    <p class="callout callout-warn">⚠️ Before starting, <a href="https://discord.gg/W59fcbydeG" target="_blank">join the
+        Discord server</a> so the bot
+      can access your profile information.</p>
+
     <div class="controls">
-      <div class="column">
+      <div class="column" id="controlsColumn">
         <div class="section">
           <span class="label">User ID</span>
           <input type="text" id="userId" placeholder="Discord User ID" value="879917497959219250">
@@ -286,12 +322,12 @@
           <div id="nitroColors" style="display: none; margin-bottom: 15px;">
             <span class="label">Nitro Colors</span>
             <div class="color-input-group">
-              <input type="color" id="primaryColorPicker" value="#5865F2">
-              <input type="text" id="primaryColorText" value="#5865F2" placeholder="#RRGGBB">
+              <input type="color" id="primaryColorPicker" value="#8180ff">
+              <input type="text" id="primaryColorText" value="#8180ff" placeholder="#RRGGBB">
             </div>
             <div class="color-input-group">
-              <input type="color" id="accentColorPicker" value="#99AAB5">
-              <input type="text" id="accentColorText" value="#99AAB5" placeholder="#RRGGBB">
+              <input type="color" id="accentColorPicker" value="#fe80c0">
+              <input type="text" id="accentColorText" value="#fe80c0" placeholder="#RRGGBB">
             </div>
           </div>
           <div id="customColors" style="display: none; margin-bottom: 15px;">
@@ -436,97 +472,37 @@
       }
       themeRadios.forEach(radio => radio.addEventListener('change', updateThemeControls));
       updateThemeControls();
-      
-      // Sync color pickers with text inputs
-      primaryColorPicker.addEventListener('input', function() {
-        primaryColorText.value = this.value.toUpperCase();
-      });
-      primaryColorText.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          primaryColorPicker.value = this.value;
-        }
-      });
-      accentColorPicker.addEventListener('input', function() {
-        accentColorText.value = this.value.toUpperCase();
-      });
-      accentColorText.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          accentColorPicker.value = this.value;
-        }
-      });
-      colorB1Picker.addEventListener('input', function() {
-        colorB1Text.value = this.value.toUpperCase();
-      });
-      colorB1Text.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorB1Picker.value = this.value;
-        }
-      });
-      colorB2Picker.addEventListener('input', function() {
-        colorB2Text.value = this.value.toUpperCase();
-      });
-      colorB2Text.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorB2Picker.value = this.value;
-        }
-      });
-      colorB3Picker.addEventListener('input', function() {
-        colorB3Text.value = this.value.toUpperCase();
-      });
-      colorB3Text.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorB3Picker.value = this.value;
-        }
-      });
-      colorT1Picker.addEventListener('input', function() {
-        colorT1Text.value = this.value.toUpperCase();
-      });
-      colorT1Text.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorT1Picker.value = this.value;
-        }
-      });
-      colorT2Picker.addEventListener('input', function() {
-        colorT2Text.value = this.value.toUpperCase();
-      });
-      colorT2Text.addEventListener('input', function() {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorT2Picker.value = this.value;
-        }
-      });
-      
-      // Generate preview
-      generateButton.addEventListener('click', function() {
+
+      function generatePreview() {
         const userId = userIdInput.value.trim();
-        if (!userId) {
-          alert('Please enter a Discord User ID');
+        if (!userId || isNaN(userId) || !(userId.length == 18 || userId.length == 17)) {
           return;
         }
-        
+
         // Add loading state
         generateButton.textContent = 'Generating...';
         generateButton.disabled = true;
-        
+
         // Build URL
         let url = `/api/user/${userId}`;
         const params = new URLSearchParams();
-        
+
         if (enableAboutMeCheckbox.checked && aboutMeTextarea.value) {
           params.append('aboutMe', aboutMeTextarea.value);
         }
-        
+
         if (overrideBannerCheckbox.checked && bannerUrlInput.value) {
           params.append('banner', bannerUrlInput.value);
         }
-        
+
         if (hideDecorationCheckbox.checked) {
           params.append('hideDecoration', 'true');
         }
-        
+
         if (hideSpotifyCheckbox.checked) {
           params.append('hideSpotify', 'true');
         }
-        
+
         // Add theme parameters
         let selectedTheme;
         themeRadios.forEach(radio => {
@@ -553,14 +529,14 @@
         if (animatedToggle && animatedToggle.checked) {
           params.append('animate', 'true');
         }
-        
+
         if (params.toString()) {
           url += `?${params.toString()}`;
         }
-        
+
         // Update preview
         previewImage.style.opacity = '0.5';
-        
+
         // First fetch the username
         fetch(`/api/username/${userId}`)
           .then(response => {
@@ -569,40 +545,103 @@
           })
           .then(data => {
             const username = data.username;
-            
+
             // Create new image to handle load event
             const newImage = new Image();
-            newImage.onload = function() {
+            newImage.onload = function () {
               previewImage.src = url;
               previewImage.style.opacity = '1';
-              
+
               // Format the URL as requested
               const fullUrl = window.location.origin + url;
               const markdownUrl = `[![${username}'s Discord status](${fullUrl})](https://github.com/TetraTsunami/discord-github-preview)`;
               previewUrlDisplay.textContent = markdownUrl;
               rawUrlDisplay.textContent = fullUrl;
-              
+
               generateButton.textContent = 'Generate Preview';
               generateButton.disabled = false;
             };
-            
-            newImage.onerror = function() {
+
+            newImage.onerror = function () {
               alert('Failed to generate image. Please check the User ID and try again.');
               generateButton.textContent = 'Generate Preview';
               generateButton.disabled = false;
               previewImage.style.opacity = '1';
             };
-            
+
             newImage.src = url;
           })
           .catch(error => {
             console.error('Error fetching username:', error);
-            alert('Failed to fetch username. Please check the User ID and try again.');
             generateButton.textContent = 'Generate Preview';
             generateButton.disabled = false;
             previewImage.style.opacity = '1';
           });
+      }
+      document.getElementById('controlsColumn').addEventListener('input', function () {
+        generatePreview();
       });
+
+      // Sync color pickers with text inputs
+      primaryColorPicker.addEventListener('input', function () {
+        primaryColorText.value = this.value.toUpperCase();
+      });
+      primaryColorText.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          primaryColorPicker.value = this.value;
+        }
+      });
+      accentColorPicker.addEventListener('input', function () {
+        accentColorText.value = this.value.toUpperCase();
+      });
+      accentColorText.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          accentColorPicker.value = this.value;
+        }
+      });
+      colorB1Picker.addEventListener('input', function () {
+        colorB1Text.value = this.value.toUpperCase();
+      });
+      colorB1Text.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          colorB1Picker.value = this.value;
+        }
+      });
+      colorB2Picker.addEventListener('input', function () {
+        colorB2Text.value = this.value.toUpperCase();
+      });
+      colorB2Text.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          colorB2Picker.value = this.value;
+        }
+      });
+      colorB3Picker.addEventListener('input', function () {
+        colorB3Text.value = this.value.toUpperCase();
+      });
+      colorB3Text.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          colorB3Picker.value = this.value;
+        }
+      });
+      colorT1Picker.addEventListener('input', function () {
+        colorT1Text.value = this.value.toUpperCase();
+      });
+      colorT1Text.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          colorT1Picker.value = this.value;
+        }
+      });
+      colorT2Picker.addEventListener('input', function () {
+        colorT2Text.value = this.value.toUpperCase();
+      });
+      colorT2Text.addEventListener('input', function () {
+        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
+          colorT2Picker.value = this.value;
+        }
+      });
+
+      // Generate preview
+      generateButton.addEventListener('click', generatePreview);
       
       // Copy URL
       copyUrlButton.addEventListener('click', function() {

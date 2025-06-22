@@ -1,7 +1,7 @@
 import { Activity } from "discord.js";
 import { ActivityDisplay, ColorTheme } from "../../types";
 import { bannerHeight } from "../card";
-import { URItoBase64 } from "../utils";
+import { setOpacity, URItoBase64 } from "../utils";
 import { fontFamily } from "../fonts";
 
 export const customStatus: ActivityDisplay = {
@@ -15,11 +15,12 @@ export const customStatus: ActivityDisplay = {
     const emojiSize = hasEmoji && !hasText ? 66 : 34;
     const emojiUrl = hasCustomEmoji && activity.emoji?.imageURL({ size: 64 });
     const emojiName = activity.emoji?.name;
+    const background = setOpacity(colors.secondaryBackground, 1);
 
     return `<g>
-      <circle cx="220" cy="${bannerHeight - 30}" r="15" style="fill:${colors.secondaryBackground};"/>
-      <circle cx="250" cy="${bannerHeight + 5}" r="25" style="fill:${colors.secondaryBackground};"/>
-      <rect x="200" y="${bannerHeight + 5}" width="${hasEmoji && !hasText ? 120 : 480}" height="${(activity.state?.length || 80) > 40 ? 90 : 60}" rx="25px" style="fill:${colors.secondaryBackground};"/>
+      <circle cx="220" cy="${bannerHeight - 30}" r="15" style="fill:${background};"/>
+      <circle cx="250" cy="${bannerHeight + 5}" r="25" style="fill:${background};"/>
+      <rect x="200" y="${bannerHeight + 5}" width="${hasEmoji && !hasText ? 120 : 480}" height="${(activity.state?.length || 80) > 40 ? 90 : 60}" rx="25px" style="fill:${background};"/>
     ${hasCustomEmoji ?
         `<image xlink:href="${await URItoBase64(emojiUrl as string)}" x="220" y="${bannerHeight + 15}" height="${emojiSize}" width="${emojiSize}" />` :
         hasEmoji ?

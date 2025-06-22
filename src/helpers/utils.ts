@@ -53,9 +53,13 @@ export const formatDuration = (time: number) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
+// Converts a hex color string to an RGB array (e.g., "#FF5733" to [255, 87, 51], #FF5733AA to [255, 87, 51])
 const hexToRgb = (hex: string) => {
-  const bigint = parseInt(hex.slice(1), 16);
-  return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+  const bigint = parseInt(hex.slice(1, 8), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return [r, g, b];
 };
 
 const rgbToHex = (r: number, g: number, b: number, a?: number) => {
