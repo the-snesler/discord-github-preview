@@ -1,4 +1,4 @@
-FROM node:23-slim AS base
+FROM node:23-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -14,9 +14,23 @@ COPY . .
 RUN pnpm run build
 
 FROM base
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/dist/ /app/dist/
-COPY --from=build /app/public/ /app/public/
-ENV NODE_ENV production
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nodejs
+
+COPY --from=builder /app/public ./public
+
+COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
+
+#RUN yarn global add pnpm && pnpm i sharp;
+USER nodejs
+
 EXPOSE 3000
-CMD [ "pnpm", "start" ]
+
+ENV PORT=3000
+
+#ENV NEXT_SHARP_PATH=/app/node_modules/sharp
+
+CMD ["node", "server.js"]
