@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --color-discord-primary: #5865f2;
+  --color-discord-primary-hover: #4752c4;
+  --color-discord-bg: #313338;
+  --color-discord-bg-secondary: #2b2d31;
+  --color-discord-bg-tertiary: #1e1f22;
+  --color-discord-text: #f2f3f5;
+  --color-discord-text-muted: #b5bac1;
+  --color-discord-input-bg: #1e1f22;
+  --color-discord-border: #232428;
+  --color-discord-success: #3ba55c;
+
+  --radius-lg: 8px;
+}

@@ -1,5 +1,5 @@
-import { ColorTheme } from "../../types";
-import { fontFamily } from "../fonts";
+import { ColorTheme } from "../..";
+import { FONT_FAMILY } from "../fonts";
 
 export function animatedDuration(strings: string[], x: number, y: number, colors: ColorTheme): string {
   // Each <text> element is rendered at the same position.
@@ -13,12 +13,12 @@ export function animatedDuration(strings: string[], x: number, y: number, colors
       animations = `<set attributeName="opacity" to="1" begin="${index}s" fill="freeze" />` +
         (index < strings.length - 1 ? `<set attributeName="opacity" to="0" begin="${index + 1}s" fill="freeze" />` : "");
     }
-    return `<text x="${x}" y="${y}" font-family="${fontFamily}" font-size="14" fill="${colors.secondaryText}" opacity="${index === 0 ? 1 : 0}">${str}${animations}</text>`;
+    return `<text x="${x}" y="${y}" font-family="${FONT_FAMILY}" font-size="14" fill="${colors.colorT2}" opacity="${index === 0 ? 1 : 0}">${str}${animations}</text>`;
   }).join("");
 }
 
 export function animatedText(strings: string[], attrs: string): string {
-    return strings.map((str, index) => {
+  return strings.map((str, index) => {
     let animations = "";
     if (index === 0) {
       animations = `<set attributeName="opacity" to="0" begin="1s" fill="freeze" />`;

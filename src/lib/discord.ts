@@ -1,5 +1,6 @@
 import { Client, Presence } from "discord.js";
 import { URItoBase64 } from "./utils";
+import './env.ts'
 
 export interface ServerTag {
   identity_guild_id: string;

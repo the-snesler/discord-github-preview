@@ -1,11 +1,13 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
-import 'dotenv/config';
+import './env.ts'
 
-const client = new Client({ intents: [
-  GatewayIntentBits.Guilds,
-  GatewayIntentBits.GuildMembers, 
-  GatewayIntentBits.GuildPresences,
-] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+  ]
+});
 
 let readyClient: Promise<Client<true>>;
 

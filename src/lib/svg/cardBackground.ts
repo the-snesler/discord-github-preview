@@ -1,9 +1,9 @@
-import { ColorTheme } from "../../types";
+import { ColorTheme } from "../..";
 import { bannerHeight } from "../card";
 import { UserProperties } from "../discord";
 
 export function cardBackground(colors: ColorTheme, nitro: boolean, totalHeight: number, banner: string | null, user: UserProperties) {
-  const bgColor = colors.background;
+  const bgColor = colors.colorB1;
   if (nitro) {
     return `<g>
 <rect x="0" y="0" width="700" height="${totalHeight}" rx="35px" style="fill:url(#nitroGradient);"/>
@@ -35,7 +35,7 @@ export function cardBackground(colors: ColorTheme, nitro: boolean, totalHeight: 
       <circle cx="100" cy="${bannerHeight}" r="93" fill="black"/>
     </mask>
     <g mask="url(#banner)">
-      <rect x="0" y="0" width="700" height="${bannerHeight}" style="fill:${banner ? colors.secondaryBackground : user.accentColor || bgColor};"/>
+      <rect x="0" y="0" width="700" height="${bannerHeight}" style="fill:${banner ? colors.colorB2 : user.accentColor || bgColor};"/>
       ${banner ? `<image xlink:href="${banner}" height="${bannerHeight}" width="700" preserveAspectRatio="xMidYMid slice" />` : ''}
     </g>
   </g>

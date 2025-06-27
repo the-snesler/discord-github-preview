@@ -1,15 +1,16 @@
 import { UserProperties } from "./discord";
 import { mixColors, setOpacity } from "./utils";
 import { darkColors, lightColors, statusColors } from "./themes";
-import { ActivityDisplay, CardOptions } from "../types";
+import { ActivityDisplay, CardOptions } from "..";
 import { cardBackground } from "./svg/cardBackground";
 import { spotifyActivity } from "./displayables/spotifyActivity";
 import { customStatus } from "./displayables/customStatus";
 import { richPresence } from "./displayables/richPresence";
 import { genericActivity } from "./displayables/genericActivity";
 import { aboutMe, aboutMeHeight } from "./svg/aboutMe";
-import { GG_SANS_FONT_FACE, fontFamily } from "./fonts";
+import { GG_SANS_FONT_FACE, FONT_FAMILY } from "./fonts";
 import { nameSVG } from "./svg/name";
+import './env.ts'
 
 export const bannerHeight = 180;
 const userHeaderHeight = 180;
@@ -33,17 +34,17 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
   }
   // Handle theme color settings
   let colors = { ...darkColors };
-  if (options.themeType === "light" || options.themeType === "nitroLight") {
+  if (options.theme === "light" || options.theme === "nitroLight") {
     colors = { ...lightColors };
-  } else if (options.themeType === "custom") {
+  } else if (options.theme === "custom") {
     colors = {
       ...darkColors,
       ...options.customColors,
     }
   }
-  const isNitroProfile = options.themeType === "nitroDark" || options.themeType === "nitroLight";
+  const isNitroProfile = options.theme === "nitroDark" || options.theme === "nitroLight";
   if (isNitroProfile) {
-    colors.secondaryBackground = setOpacity(colors.background, 0.7);
+    colors.colorB2 = setOpacity(colors.colorB1, 0.7);
   }
   // Generate promises all at once so they can be awaited in parallel (activities use promises to load their images)
   const activityPromises: Promise<string>[] = []
@@ -90,12 +91,12 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
         <rect x="5" y="5" width="690" height="${totalHeight - 10}" rx="30px" />
       </clipPath>
       <linearGradient id="nitroGradient" x1="0" y1="0" x2="0" y2="100%">
-        <stop offset="0%" style="stop-color:${options.nitroColor1}" />
-        <stop offset="100%" style="stop-color:${options.nitroColor2}" />
+        <stop offset="0%" style="stop-color:${options.primaryColor}" />
+        <stop offset="100%" style="stop-color:${options.accentColor}" />
       </linearGradient>
       <linearGradient id="nitroOverlay" x1="0" y1="0" x2="0" y2="100%">
-        <stop offset="0%" style="stop-color:${mixColors(options.nitroColor1, colors.background, 0.35)}" />
-        <stop offset="100%" style="stop-color:${mixColors(options.nitroColor2, colors.background, 0.35)}" />
+        <stop offset="0%" style="stop-color:${mixColors(options.primaryColor, colors.colorB1, 0.35)}" />
+        <stop offset="100%" style="stop-color:${mixColors(options.accentColor, colors.colorB1, 0.35)}" />
       </linearGradient>
     `}
   </defs>
@@ -139,7 +140,7 @@ ${decoration ? `
 </g>
 
 <g>
-  <circle cx="160" cy="${bannerHeight + 60}" r="30" style="fill:${mixColors(colors.background, options.nitroColor1, 0.85) };"/>
+  <circle cx="160" cy="${bannerHeight + 60}" r="30" style="fill:${mixColors(colors.colorB1, options.primaryColor, 0.85)};"/>
   <rect x="140" y="${bannerHeight + 40}" width="40" height="40" style="fill:${statusColors[statusString]}; mask:url('#status-${statusString}');"/>
 </g>
 
