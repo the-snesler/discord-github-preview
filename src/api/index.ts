@@ -44,6 +44,9 @@ export const discordDebug: RequestHandler = async (req, res, next) => {
   }
 }
 
+const isHex = (input: string) => !isNaN(parseInt(input, 16)) && input.length >= 3 && input.length <= 8
+const hexMessage = { message: "Colors must be in hexadecimal format without a leading #" }
+
 
 const ParamsSchema = z.object({
   width: z.coerce.number().default(500),
@@ -59,13 +62,13 @@ const ParamsSchema = z.object({
   hideDecoration: z.coerce.boolean().default(false),
   hideSpotify: z.coerce.boolean().default(false),
   theme: z.enum(["dark", "light", "custom", "nitroDark", "nitroLight"]).default("dark"),
-  primaryColor: z.string().default("ecaff3"),
-  accentColor: z.string().default("44a17a"),
-  colorB1: z.string().default("111214"),
-  colorB2: z.string().default("313338"),
-  colorB3: z.string().default("505059"),
-  colorT1: z.string().default("fff"),
-  colorT2: z.string().default("d2d6d8"),
+  primaryColor: z.string().default("ecaff3").refine(isHex, hexMessage).transform((val) => "#" + val),
+  accentColor: z.string().default("44a17a").refine(isHex, hexMessage).transform((val) => "#" + val),
+  colorB1: z.string().default("111214").refine(isHex, hexMessage).transform((val) => "#" + val),
+  colorB2: z.string().default("313338").refine(isHex, hexMessage).transform((val) => "#" + val),
+  colorB3: z.string().default("505059").refine(isHex, hexMessage).transform((val) => "#" + val),
+  colorT1: z.string().default("fff").refine(isHex, hexMessage).transform((val) => "#" + val),
+  colorT2: z.string().default("d2d6d8").refine(isHex, hexMessage).transform((val) => "#" + val),
 }).superRefine((data, ctx) => {
   if (data.theme === "nitroDark" || data.theme === "nitroLight") {
     if (!data.primaryColor || !data.accentColor) {

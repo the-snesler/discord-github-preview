@@ -1,13 +1,12 @@
 import React from "react";
 import { UserProperties } from "../helpers/discord";
-import { CardOptions, ColorTheme } from "../types";
+import { BakedDisplayableComponent, CardOptions, ColorTheme } from "../types";
 import { mixColors } from "../helpers/utils";
 import { GG_SANS_FONT_FACE } from "../helpers/fonts";
 import { statusColors } from "../helpers/themes";
-import AboutMe from "./AboutMe";
-import { options } from "apicache";
 import { bannerHeight, isNitroProfile } from "../helpers/card";
 import UserCardBackground from "./UserCardBackground";
+import AboutMe from "./AboutMe";
 
 interface SVGCardProps {
   user: UserProperties;
@@ -15,13 +14,10 @@ interface SVGCardProps {
   colors: ColorTheme;
   totalHeight: number;
   aboutMeY: number;
-  resources: {
-    avatar: string | null;
-    banner: string | null;
-    decoration: string | null;
-    awaitedActivities: string[];
-    name: string;
-  };
+  avatar: string | null;
+  banner: string | null;
+  decoration: string | null;
+  displayables: BakedDisplayableComponent<any>[];
 }
 
 export const SVGCard: React.FC<SVGCardProps> = ({
@@ -30,12 +26,15 @@ export const SVGCard: React.FC<SVGCardProps> = ({
   colors,
   totalHeight,
   aboutMeY,
-  resources,
+  avatar,
+  banner,
+  decoration,
+  displayables,
 }) => {
   const statusString = (
     user.presence?.status && statusColors.hasOwnProperty(user.presence.status)
       ? user.presence.status
-      : "online"
+      : "offline"
   ) as keyof typeof statusColors;
   const useNitroTheme = isNitroProfile(options.theme);
 
@@ -63,13 +62,7 @@ export const SVGCard: React.FC<SVGCardProps> = ({
         {useNitroTheme && (
           <>
             <clipPath id="innerBackground">
-              <rect
-                x="5"
-                y="5"
-                width="690"
-                height={totalHeight - 10}
-                rx="30px"
-              />
+              <rect x="5" y="5" width="690" height={totalHeight - 10} rx="30px" />
             </clipPath>
             <linearGradient id="nitroGradient" x1="0" y1="0" x2="0" y2="100%">
               <stop offset="0%" style={{ stopColor: options.primaryColor }} />
@@ -79,21 +72,13 @@ export const SVGCard: React.FC<SVGCardProps> = ({
               <stop
                 offset="0%"
                 style={{
-                  stopColor: mixColors(
-                    options.primaryColor!,
-                    colors.colorB1,
-                    0.35
-                  ),
+                  stopColor: mixColors(options.primaryColor!, colors.colorB1, 0.35),
                 }}
               />
               <stop
                 offset="100%"
                 style={{
-                  stopColor: mixColors(
-                    options.accentColor!,
-                    colors.colorB1,
-                    0.35
-                  ),
+                  stopColor: mixColors(options.accentColor!, colors.colorB1, 0.35),
                 }}
               />
             </linearGradient>
@@ -105,7 +90,7 @@ export const SVGCard: React.FC<SVGCardProps> = ({
         colors={colors}
         nitro={useNitroTheme}
         totalHeight={totalHeight}
-        banner={resources.banner}
+        banner={banner}
         user={user}
       />
 
@@ -115,53 +100,29 @@ export const SVGCard: React.FC<SVGCardProps> = ({
           <circle cx="100" cy={bannerHeight} r="83" />
         </clipPath>
         <g clipPath="url(#avatar)">
-          {resources.avatar && (
-            <image
-              xlinkHref={resources.avatar}
-              x="17"
-              y={bannerHeight - 83}
-              height="166"
-              width="166"
-            />
+          {avatar && (
+            <image xlinkHref={avatar} x="17" y={bannerHeight - 83} height="166" width="166" />
           )}
         </g>
       </g>
 
       {/* Avatar Decoration */}
-      {resources.decoration && (
+      {decoration && (
         <g>
-          <image
-            xlinkHref={resources.decoration}
-            x="0"
-            y={bannerHeight - 100}
-            height="200"
-            width="200"
-          />
+          <image xlinkHref={decoration} x="0" y={bannerHeight - 100} height="200" width="200" />
         </g>
       )}
 
       {/* Status masks */}
       <g>
-        <mask
-          id="status-online"
-          maskContentUnits="objectBoundingBox"
-          viewBox="0 0 1 1"
-        >
+        <mask id="status-online" maskContentUnits="objectBoundingBox" viewBox="0 0 1 1">
           <circle fill="white" cx="0.5" cy="0.5" r="0.5"></circle>
         </mask>
-        <mask
-          id="status-idle"
-          maskContentUnits="objectBoundingBox"
-          viewBox="0 0 1 1"
-        >
+        <mask id="status-idle" maskContentUnits="objectBoundingBox" viewBox="0 0 1 1">
           <circle fill="white" cx="0.5" cy="0.5" r="0.5"></circle>
           <circle fill="black" cx="0.25" cy="0.25" r="0.375"></circle>
         </mask>
-        <mask
-          id="status-dnd"
-          maskContentUnits="objectBoundingBox"
-          viewBox="0 0 1 1"
-        >
+        <mask id="status-dnd" maskContentUnits="objectBoundingBox" viewBox="0 0 1 1">
           <circle fill="white" cx="0.5" cy="0.5" r="0.5"></circle>
           <rect
             fill="black"
@@ -173,11 +134,7 @@ export const SVGCard: React.FC<SVGCardProps> = ({
             ry="0.125"
           ></rect>
         </mask>
-        <mask
-          id="status-offline"
-          maskContentUnits="objectBoundingBox"
-          viewBox="0 0 1 1"
-        >
+        <mask id="status-offline" maskContentUnits="objectBoundingBox" viewBox="0 0 1 1">
           <circle fill="white" cx="0.5" cy="0.5" r="0.5"></circle>
           <circle fill="black" cx="0.5" cy="0.5" r="0.25"></circle>
         </mask>
@@ -190,11 +147,7 @@ export const SVGCard: React.FC<SVGCardProps> = ({
           cy={bannerHeight + 60}
           r="30"
           style={{
-            fill: mixColors(
-              colors.colorB1,
-              options.primaryColor || colors.colorB1,
-              0.85
-            ),
+            fill: mixColors(colors.colorB1, options.primaryColor || colors.colorB1, 0.85),
           }}
         />
         <rect
@@ -209,23 +162,17 @@ export const SVGCard: React.FC<SVGCardProps> = ({
         />
       </g>
 
-      {/* Display Name, Badges and Server Tag */}
-      <g dangerouslySetInnerHTML={{ __html: resources.name }} />
-
       {/* Discord Icon */}
       <path
         fill="#fff"
         transform="translate(645 15) scale(0.3)"
         d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"
       />
-
-      {/* Activities */}
-      {resources.awaitedActivities.map((activity, index) => (
-        <g key={index} dangerouslySetInnerHTML={{ __html: activity }} />
-      ))}
-      {options.aboutMe && (
-        <AboutMe content={options.aboutMe} colors={colors} startY={aboutMeY} />
-      )}
+      {displayables.map((displayable, index) => {
+        const { props, render: Render } = displayable;
+        return <Render key={index} {...props} />;
+      })}
+      {options.aboutMe && <AboutMe content={options.aboutMe} colors={colors} startY={aboutMeY} />}
     </svg>
   );
 };

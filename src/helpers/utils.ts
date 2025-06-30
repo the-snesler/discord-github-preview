@@ -94,3 +94,28 @@ export const setOpacity = (color: string, opacity: number): string => {
   const [r, g, b] = hexToRgb(color);
   return rgbToHex(r, g, b, opacity);
 }
+
+
+/**
+ * Takes in an object of resources where each value is a Promise or null, and returns a Promise that resolves to an object with the same keys, where each value is the resolved value of the corresponding Promise.
+ */
+export const bundlePromises = async <T extends Record<string, Promise<any> | null>>(resources: T): Promise<{
+  [K in keyof T]: T[K] extends Promise<infer U> | null ? U : null
+}> => {
+  // Filter out null values and keep track of which keys had actual promises
+  const entries = Object.entries(resources);
+  const validEntries = entries.map(([key, val]) => val === null ? [key, Promise.resolve(null)] : [key, val]);
+
+  const results = await Promise.all(validEntries.map(([_, promise]) => promise));
+
+  return Object.keys(resources).reduce((acc, key, index) => {
+    const resource = resources[key];
+    if (resource === null) {
+      acc[key as keyof T] = null as any;
+    } else {
+      const resultIndex = validEntries.findIndex(([k]) => k === key);
+      acc[key as keyof T] = results[resultIndex] as any;
+    }
+    return acc;
+  }, {} as any);
+}

@@ -3,14 +3,14 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { UserProperties } from "./discord";
 import { setOpacity } from "./utils";
 import { darkColors, lightColors } from "./themes";
-import { ActivityDisplay, CardOptions } from "../types";
-import { spotifyActivity } from "./displayables/spotifyActivity";
-import { customStatus } from "./displayables/customStatus";
-import { richPresence } from "./displayables/richPresence";
-import { genericActivity } from "./displayables/genericActivity";
-import { aboutMeHeight } from "../components/AboutMe";
-import { nameSVG } from "../components/Name";
+import { BakedDisplayableComponent, CardOptions, DisplayableComponent, PrerenderProps } from "../types";
 import { SVGCard } from "../components/UserCard";
+import { spotifyActivity } from "../displayables/SpotifyActivity";
+import { customStatus } from "../displayables/CustomStatus";
+import { richPresence } from "../displayables/RichPresence";
+import { genericActivity } from "../displayables/GenericActivity";
+import { name } from "../displayables/Name";
+import { aboutMeHeight } from "../components/AboutMe";
 
 export const bannerHeight = 180;
 const userHeaderHeight = 180;
@@ -23,7 +23,8 @@ export const isNitroProfile = (theme: CardOptions["theme"]) => {
   return theme === "nitroDark" || theme === "nitroLight";
 }
 
-const displayables = [customStatus, spotifyActivity, richPresence, genericActivity];
+const singleMatchers = [name];
+const activityMatchers = [customStatus, spotifyActivity, richPresence, genericActivity];
 
 export const makeCard = async (user: UserProperties, options: CardOptions) => {
   const activities = user.presence?.activities || [];
@@ -49,8 +50,6 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
   if (useNitroTheme) {
     colors.colorB2 = setOpacity(colors.colorB1, 0.7);
   }
-  // Generate promises all at once so they can be awaited in parallel (activities use promises to load their images)
-  const activityPromises: Promise<string>[] = []
   let currentHeight = bannerHeight + userHeaderHeight;
 
   // Filter out Spotify activities if hideSpotify is true
@@ -58,11 +57,27 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
     ? activities.filter(activity => activity.name !== "Spotify")
     : activities;
 
+  // Start working through our displayables
+  const displayables: BakedDisplayableComponent<any>[] = [];
+  const displayablePromises = [];
+  let prerenderProps: PrerenderProps = { user, options }
+  for (let i = 0; i < singleMatchers.length; i++) {
+    const displayable = singleMatchers[i] as BakedDisplayableComponent<any>;
+    if (displayable.matches ? !displayable.matches(prerenderProps) : false) continue;
+    const serverProp = displayable.fetchServerProp ? displayable.fetchServerProp(prerenderProps) : null;
+    displayable.props = { user, options, colors, bannerHeight, serverProp: null, y: 0 }
+    displayables.push(displayable);
+    displayablePromises.push(serverProp);
+  }
   for (let i = 0; i < filteredActivities.length; i++) {
     const activity = filteredActivities[i];
-    const display = displayables.find(displayable => displayable.matches(activity)) as ActivityDisplay;
-    activityPromises.push(display.render(activity, colors, currentHeight, options.width));
-    currentHeight += display.height + 10;
+    prerenderProps.activity = activity;
+    const displayable = activityMatchers.find(displayable => displayable.matches ? displayable.matches(prerenderProps) : true) as BakedDisplayableComponent<any>;
+    const serverProp = displayable.fetchServerProp ? displayable.fetchServerProp(prerenderProps) : null;
+    displayable.props = { user, options, colors, bannerHeight, serverProp: null, activity, y: currentHeight }
+    currentHeight += displayable.height ? displayable.height + 10 : 0;
+    displayables.push(displayable);
+    displayablePromises.push(serverProp);
   }
   // about me
   let aboutMeY = currentHeight;
@@ -71,14 +86,17 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
     currentHeight += estimatedHeight + 10;
   }
   const totalHeight = currentHeight + 10; // padding at the bottom
-  // Await all at once for images to load
-  const [avatar, banner, decoration, awaitedActivities, name] = await Promise.all([
+  // Await all the various promises
+  const [avatar, banner, decoration, serverProps] = await Promise.all([
     user.avatarURL,
     user.bannerURL,
     user.avatarDecorationURL,
-    Promise.all(activityPromises),
-    nameSVG(user, colors, bannerHeight)
+    Promise.all(displayablePromises)
   ]);
+
+  for (let i = 0; i < displayables.length; i++) {
+    displayables[i].props.serverProp = serverProps[i]
+  }
 
   const svgComponent = React.createElement(SVGCard, {
     user,
@@ -86,13 +104,10 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
     colors,
     totalHeight,
     aboutMeY,
-    resources: {
-      avatar,
-      banner,
-      decoration,
-      awaitedActivities,
-      name
-    }
+    avatar,
+    banner,
+    decoration,
+    displayables,
   });
 
   const svgMarkup = renderToStaticMarkup(svgComponent);

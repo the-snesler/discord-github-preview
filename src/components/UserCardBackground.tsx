@@ -27,35 +27,30 @@ export default function cardBackground({
           width="700"
           height={totalHeight}
           rx="35px"
-          style={{ fill: "url(#nitroGradient);" }}
+          style={{ fill: "url(#nitroGradient)" }}
         />
-        <g clip-path="url(#innerBackground)">
+        <g clipPath="url(#innerBackground)">
           <mask id="not-banner">
             <circle cx="100" cy={bannerHeight} r="93" fill="white" />
+            <rect
+              x="5"
+              rx={5}
+              y={bannerHeight}
+              width="690"
+              height={totalHeight - bannerHeight - 5}
+              fill="white"
+            />
           </mask>
-          <rect
-            x="5"
-            y={bannerHeight}
-            width="690"
-            height={totalHeight - bannerHeight - 5}
-            style={{ fill: "url(#nitroOverlay);" }}
-          />
           <rect
             x="5"
             y="5"
             width="690"
-            height={bannerHeight - 5}
-            style={{ fill: "url(#nitroOverlay);", mask: "url(#not-banner);" }}
+            height={totalHeight - 5}
+            style={{ fill: "url(#nitroOverlay)", mask: "url(#not-banner)" }}
           />
           <g>
             <mask id="banner">
-              <rect
-                x="0"
-                y="0"
-                width="700"
-                height={bannerHeight}
-                fill="white"
-              />
+              <rect x="0" y="0" width="700" height={bannerHeight} fill="white" />
               <circle cx="100" cy={bannerHeight} r="93" fill="black" />
             </mask>
             <g mask="url(#banner)">
@@ -77,24 +72,11 @@ export default function cardBackground({
   } else {
     return (
       <g>
-        <rect
-          x="0"
-          y="0"
-          width="700"
-          height={totalHeight}
-          rx="35px"
-          style={{ fill: bgColor }}
-        />
-        <g clip-path="url(#background)">
+        <rect x="0" y="0" width="700" height={totalHeight} rx="35px" style={{ fill: bgColor }} />
+        <g clipPath="url(#background)">
           <g>
             <mask id="banner">
-              <rect
-                x="0"
-                y="0"
-                width="700"
-                height={bannerHeight}
-                fill="white"
-              />
+              <rect x="0" y="0" width="700" height={bannerHeight} fill="white" />
               <circle cx="100" cy={bannerHeight} r="93" fill="black" />
             </mask>
             <g mask="url(#banner)">

@@ -14,7 +14,7 @@ export function aboutMeHeight(text: string) {
   return Math.max(120, 70 + Math.ceil(text.length / 40) * 24);
 }
 
-export default function aboutMe({ content, colors, startY }: Props): ReactNode {
+export default function AboutMe({ content, colors, startY }: Props): ReactNode {
   if (!content) return null;
 
   const sanitizedText = sanitizeString(content);
@@ -33,9 +33,13 @@ export default function aboutMe({ content, colors, startY }: Props): ReactNode {
         style={{
           background: colors.colorB2,
           fontFamily: fontFamily,
-          padding: "20px",
+          padding: "3px 20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
           borderRadius: "15px",
           width: "100%",
+          height: "100%",
           boxSizing: "border-box",
         }}
       >
