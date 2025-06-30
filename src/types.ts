@@ -1,11 +1,11 @@
 import { Activity } from "discord.js";
 
 export interface ColorTheme {
-  background: string;
-  secondaryBackground: string;
-  tertiaryBackground: string;
-  text: string;
-  secondaryText: string;
+  colorB1: string;
+  colorB2: string;
+  colorB3: string;
+  colorT1: string;
+  colorT2: string;
 }
 
 export interface ActivityDisplay {
@@ -17,12 +17,12 @@ export interface ActivityDisplay {
 export interface CardOptions {
   width: number;
   animate: boolean;
-  overrideBannerUrl: string | null;
-  aboutMe: string | null;
+  overrideBannerUrl?: string;
+  aboutMe?: string;
   hideDecoration: boolean;
   hideSpotify: boolean;
-  themeType: "dark" | "light" | "custom" | "nitroDark" | "nitroLight";
-  nitroColor1: string;
-  nitroColor2: string;
+  theme: "dark" | "light" | "custom" | "nitroDark" | "nitroLight";
+  primaryColor: string;
+  accentColor: string;
   customColors?: ColorTheme;
 }

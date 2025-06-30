@@ -6,6 +6,8 @@
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "jsx": "react",
+    "allowJs": true
   },
   "exclude": ["./node_modules"]
 }

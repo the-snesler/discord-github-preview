@@ -15,7 +15,7 @@ export const customStatus: ActivityDisplay = {
     const emojiSize = hasEmoji && !hasText ? 66 : 34;
     const emojiUrl = hasCustomEmoji && activity.emoji?.imageURL({ size: 64 });
     const emojiName = activity.emoji?.name;
-    const background = setOpacity(colors.secondaryBackground, 1);
+    const background = setOpacity(colors.colorB2, 1);
 
     return `<g>
       <circle cx="220" cy="${bannerHeight - 30}" r="15" style="fill:${background};"/>
@@ -24,11 +24,11 @@ export const customStatus: ActivityDisplay = {
     ${hasCustomEmoji ?
         `<image xlink:href="${await URItoBase64(emojiUrl as string)}" x="220" y="${bannerHeight + 15}" height="${emojiSize}" width="${emojiSize}" />` :
         hasEmoji ?
-          `<text style="fill: ${colors.text}; font-family:${fontFamily}; font-size:${emojiSize - 4}px;" x="220" y="${bannerHeight + emojiSize + 10}">${emojiName}</text>`
+        `<text style="fill: ${colors.colorT1}; font-family:${fontFamily}; font-size:${emojiSize - 4}px;" x="220" y="${bannerHeight + emojiSize + 10}">${emojiName}</text>`
           : ""}
     ${hasText ? `<foreignObject x="${xOffset}" y="${bannerHeight + 20}" width="${700 - xOffset - 40}" height="60">
       <p xmlns="http://www.w3.org/1999/xhtml" 
-      style="color: ${colors.secondaryText}; margin: 0; font-family:${fontFamily}; font-size: 22px; font-style: italic; line-height: 1.2em;">
+      style="color: ${colors.colorT2}; margin: 0; font-family:${fontFamily}; font-size: 22px; font-style: italic; line-height: 1.2em;">
       ${activity.state}</p>
     </foreignObject>` : ""}
   </g>`;

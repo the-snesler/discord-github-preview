@@ -2,18 +2,18 @@ import { ColorTheme } from "../types";
 
 
 export const darkColors: ColorTheme = {
-  background: "#111214",
-  secondaryBackground: "#313338",
-  tertiaryBackground: "#505059",
-  text: "#fff",
-  secondaryText: "#d2d6d8",
+  colorB1: "#111214",
+  colorB2: "#313338",
+  colorB3: "#505059",
+  colorT1: "#fff",
+  colorT2: "#d2d6d8",
 };
 export const lightColors: ColorTheme = {
-  background: "#ffffff",
-  secondaryBackground: "#f2f2f3",
-  tertiaryBackground: "#e6e6e8",
-  text: "#000000",
-  secondaryText: "#606069",
+  colorB1: "#ffffff",
+  colorB2: "#f2f2f3",
+  colorB3: "#e6e6e8",
+  colorT1: "#000000",
+  colorT2: "#606069",
 };export const statusColors = {
   online: "#43b581",
   idle: "#faa61a",

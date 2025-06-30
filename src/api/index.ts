@@ -4,6 +4,7 @@ import { CardOptions } from "../types";
 import { validateId, fetchUserInfo } from "../helpers/discord";
 import type { RequestHandler } from "express";
 import { URItoBase64 } from "../helpers/utils";
+import z from "zod";
 
 export const discordSelf: RequestHandler = async (req, res, next) => {
   const client = await readyClient;
@@ -27,10 +28,9 @@ export const discordDebug: RequestHandler = async (req, res, next) => {
       animate: false,
       width: 500,
       aboutMe: "This is a test about me section",
-      themeType: "nitroDark",
-      nitroColor1: "#7289DA", // Discord blue
-      nitroColor2: "#99AAB5", // Discord grey
-      overrideBannerUrl: null,
+      theme: "nitroDark",
+      primaryColor: "#7289DA", // Discord blue
+      accentColor: "#99AAB5", // Discord grey
       hideDecoration: false,
       hideSpotify: false,
     }
@@ -44,31 +44,55 @@ export const discordDebug: RequestHandler = async (req, res, next) => {
   }
 }
 
+
+const ParamsSchema = z.object({
+  width: z.coerce.number().default(500),
+  animate: z.coerce.boolean().default(false),
+  overrideBannerUrl: z.string().optional().refine((val) => {
+    if (!val) return true;
+    if (!val.startsWith("http")) return false;
+  }, {
+    // Banner override must be a valid URL, and also shouldn't point to a local file
+    message: "Banner URL must be a valid HTTP or HTTPS URL.",
+  }),
+  aboutMe: z.string().optional(),
+  hideDecoration: z.coerce.boolean().default(false),
+  hideSpotify: z.coerce.boolean().default(false),
+  theme: z.enum(["dark", "light", "custom", "nitroDark", "nitroLight"]).default("dark"),
+  primaryColor: z.string().default("ecaff3"),
+  accentColor: z.string().default("44a17a"),
+  colorB1: z.string().default("111214"),
+  colorB2: z.string().default("313338"),
+  colorB3: z.string().default("505059"),
+  colorT1: z.string().default("fff"),
+  colorT2: z.string().default("d2d6d8"),
+}).superRefine((data, ctx) => {
+  if (data.theme === "nitroDark" || data.theme === "nitroLight") {
+    if (!data.primaryColor || !data.accentColor) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Primary and accent colors must be provided for nitro themes.",
+      });
+    }
+  }
+  if (data.theme === "custom") {
+    if (!data.colorB1 || !data.colorB2 || !data.colorB3 || !data.colorT1 || !data.colorT2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Custom theme colors must be provided when theme is 'custom'.",
+      });
+    }
+  }
+});
+
 export const discordUser: RequestHandler = async (req, res, next) => {
   const client = await readyClient;
   const id = req.params.id;
-  const options: CardOptions = {
-    width: parseInt(req.query.width as string) || 500,
-    animate: req.query.animate === 'true',
-    overrideBannerUrl: req.query.banner as string | null,
-    aboutMe: req.query.aboutMe as string | null,
-    hideDecoration: req.query.hideDecoration === 'true',
-    hideSpotify: req.query.hideSpotify === 'true',
-    themeType: req.query.theme as "dark" | "light" | "custom" | "nitroDark" | "nitroLight" | undefined || "dark",
-    nitroColor1: "#" + req.query.primaryColor as string | null || "ecaff3",
-    nitroColor2: "#" + req.query.accentColor as string | null || "44a17a",
+  const { success, data: options, error } = ParamsSchema.safeParse(req.query);
+  if (!success) {
+    res.status(400).send(error.errors.map(e => e.message).join(", "));
+    return;
   }
-  if (options.themeType === "custom") {
-    options.customColors = {
-      background: "#" + req.query.colorB1 as string | null || "111214",
-      secondaryBackground: "#" + req.query.colorB2 as string | null || "313338",
-      tertiaryBackground: "#" + req.query.colorB3 as string | null || "505059",
-      text: "#" + req.query.colorT1 as string | null || "fff",
-      secondaryText: "#" + req.query.colorT2 as string | null || "d2d6d8",
-    }
-  }
-  
-  // Banner override must be a valid URL, and also shouldn't point to a local file
   if (options.overrideBannerUrl && !options.overrideBannerUrl.startsWith("http")) {
     res.status(400).send("Invalid banner URL");
     return;
