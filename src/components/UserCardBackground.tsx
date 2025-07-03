@@ -34,7 +34,7 @@ export default function cardBackground({
             <circle cx="100" cy={bannerHeight} r="93" fill="white" />
             <rect
               x="5"
-              rx={5}
+              rx={banner ? 0 : 5}
               y={bannerHeight}
               width="690"
               height={totalHeight - bannerHeight - 5}

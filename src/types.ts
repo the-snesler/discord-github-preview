@@ -13,7 +13,7 @@ export interface ColorTheme {
 export interface CardOptions {
   width: number;
   animate: boolean;
-  overrideBannerUrl?: string;
+  banner?: string;
   aboutMe?: string;
   hideDecoration: boolean;
   hideSpotify: boolean;

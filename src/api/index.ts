@@ -4,7 +4,7 @@ import { CardOptions } from "../types";
 import { validateId, fetchUserInfo } from "../helpers/discord";
 import type { RequestHandler } from "express";
 import { URItoBase64 } from "../helpers/utils";
-import z from "zod";
+import * as z from "zod/v4";
 
 export const discordSelf: RequestHandler = async (req, res, next) => {
   const client = await readyClient;
@@ -45,19 +45,16 @@ export const discordDebug: RequestHandler = async (req, res, next) => {
 }
 
 const isHex = (input: string) => !isNaN(parseInt(input, 16)) && input.length >= 3 && input.length <= 8
-const hexMessage = { message: "Colors must be in hexadecimal format without a leading #" }
-
+const hexMessage = { error: "Colors must be in hexadecimal format without a leading #" }
 
 const ParamsSchema = z.object({
   width: z.coerce.number().default(500),
   animate: z.coerce.boolean().default(false),
-  overrideBannerUrl: z.string().optional().refine((val) => {
-    if (!val) return true;
-    if (!val.startsWith("http")) return false;
-  }, {
-    // Banner override must be a valid URL, and also shouldn't point to a local file
-    message: "Banner URL must be a valid HTTP or HTTPS URL.",
-  }),
+  banner: z.url({
+    protocol: /^https?$/,
+    hostname: z.regexes.domain,
+    error: "Banner URL must be a valid HTTP or HTTPS URL."
+  }).optional(),
   aboutMe: z.string().optional(),
   hideDecoration: z.coerce.boolean().default(false),
   hideSpotify: z.coerce.boolean().default(false),
@@ -69,20 +66,23 @@ const ParamsSchema = z.object({
   colorB3: z.string().default("505059").refine(isHex, hexMessage).transform((val) => "#" + val),
   colorT1: z.string().default("fff").refine(isHex, hexMessage).transform((val) => "#" + val),
   colorT2: z.string().default("d2d6d8").refine(isHex, hexMessage).transform((val) => "#" + val),
-}).superRefine((data, ctx) => {
+}).check((ctx) => {
+  const data = ctx.value;
   if (data.theme === "nitroDark" || data.theme === "nitroLight") {
     if (!data.primaryColor || !data.accentColor) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Primary and accent colors must be provided for nitro themes.",
+      ctx.issues.push({
+        code: "custom",
+        error: "Primary and accent colors must be provided for nitro themes.",
+        input: ctx.value,
       });
     }
   }
   if (data.theme === "custom") {
     if (!data.colorB1 || !data.colorB2 || !data.colorB3 || !data.colorT1 || !data.colorT2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Custom theme colors must be provided when theme is 'custom'.",
+      ctx.issues.push({
+        code: "custom",
+        error: "Custom theme colors must be provided when theme is 'custom'.",
+        input: ctx.value
       });
     }
   }
@@ -93,11 +93,13 @@ export const discordUser: RequestHandler = async (req, res, next) => {
   const id = req.params.id;
   const { success, data: options, error } = ParamsSchema.safeParse(req.query);
   if (!success) {
-    res.status(400).send(error.errors.map(e => e.message).join(", "));
-    return;
-  }
-  if (options.overrideBannerUrl && !options.overrideBannerUrl.startsWith("http")) {
-    res.status(400).send("Invalid banner URL");
+    const errorMessage = error.issues.map(e => `<tspan x="20" dy="1.2em">${e.message}</tspan>`).join("");
+    const errorSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="200" viewBox="0 0 512 200">
+      <rect width="512" height="200" fill="#ff4444"/>
+      <text x="20" y="30" font-family="Arial, sans-serif" font-size="16" fill="white" font-weight="bold">Error:</text>
+      <text x="20" y="50" font-family="Arial, sans-serif" font-size="12" fill="white">${errorMessage}</text>
+    </svg>`;
+    res.set('Content-Type', 'image/svg+xml').status(400).send(errorSvg);
     return;
   }
   if (!validateId(id)) {
@@ -110,8 +112,8 @@ export const discordUser: RequestHandler = async (req, res, next) => {
       res.status(404).send("User not found");
       return;
     }
-    if (options.overrideBannerUrl) {
-      user.bannerURL = URItoBase64(options.overrideBannerUrl);
+    if (options.banner) {
+      user.bannerURL = URItoBase64(options.banner);
     }
     const card = await makeCard(user, options);
     res.set('Content-Type', 'image/svg+xml')
