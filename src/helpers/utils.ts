@@ -8,7 +8,7 @@ const mimeTypeMap: { [key: string]: string } = {
   gif: "image/gif",
 };
 
-const cache = new LRUCache<string, string>(String, String, 1000)
+const cache = new LRUCache<string, string>(1000)
 
 /**
  * Converts a URI to a Base64 string.
@@ -28,9 +28,9 @@ export async function URItoBase64(uri: string) {
   const res = await fetch(uri);
   const buffer = await res.arrayBuffer();
   const contentType = res.headers.get("content-type");
-  const out = `data:${contentType};base64,${Buffer.from(buffer).toString("base64")}`;
-  cache.set(uri, out);
-  return out;
+  const output = `data:${contentType};base64,${Buffer.from(buffer).toString("base64")}`;
+  cache.set(uri, output);
+  return output;
 }
 
 export function prettyDuration(duration: number) {
