@@ -8,6 +8,7 @@
     "discord.js": "^14.18.0",
     "dotenv": "^16.0.1",
     "express": "^4.19.2",
+    "mnemonist": "^0.40.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^3.25.71"

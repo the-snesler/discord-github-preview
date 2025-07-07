@@ -23,71 +23,62 @@ export const customStatus: DisplayableComponent<string | null> = {
 
     return (
       <>
-      <circle cx= "220" cy = { bannerHeight - 30
-  } r="15" style={{ fill: background }} />
-    < circle cx = "250" cy = { bannerHeight + 5} r = "25" style = {{ fill: background }} />
-      < foreignObject x = "200" y = { bannerHeight + 5} width = { 480} height = { 120} >
-        <div
+        <circle cx="220" cy={bannerHeight - 30} r="15" style={{ fill: background }} />
+        <circle cx="250" cy={bannerHeight + 5} r="25" style={{ fill: background }} />
+        <foreignObject x="200" y={bannerHeight + 5} width={480} height={120}>
+          <div
             // @ts-ignore
             xmlns="http://www.w3.org/1999/xhtml"
-style = {{
-  backgroundColor: background,
-    borderRadius: "25px",
-      padding: "1rem",
-        display: "flex",
-          alignItems: "center",
-            gap: "10px",
+            style={{
+              backgroundColor: background,
+              borderRadius: "25px",
+              padding: "1rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
               boxSizing: "border-box",
-                width: "max-content",
+              width: "max-content",
             }}
           >
-  { hasCustomEmoji && (
-    <img
-                src={ serverProp as string }
-style = {{
-  height: `${emojiSize}px`,
-    width: `${emojiSize}px`,
+            {hasCustomEmoji && (
+              <img
+                src={serverProp as string}
+                style={{
+                  height: `${emojiSize}px`,
+                  width: `${emojiSize}px`,
                 }}
-alt = "emoji"
-  />
+                alt="emoji"
+              />
             )}
-{
-  hasEmoji && !hasCustomEmoji && (
-    <span
-                style={
-    {
-      color: colors.colorT1,
-        fontFamily: fontFamily,
-          fontSize: `${emojiSize - 4}px`,
-                }
-  }
+            {hasEmoji && !hasCustomEmoji && (
+              <span
+                style={{
+                  color: colors.colorT1,
+                  fontFamily: fontFamily,
+                  fontSize: `${emojiSize - 4}px`,
+                }}
               >
-    { emojiName }
-    </span>
-            )
-}
-{
-  hasText && (
-    <p
-                style={
-    {
-      color: colors.colorT2,
-        margin: 0,
-          fontFamily: fontFamily,
-            fontSize: "22px",
-              fontStyle: "italic",
-                lineHeight: "1.2em",
+                {emojiName}
+              </span>
+            )}
+            {hasText && (
+              <p
+                style={{
+                  color: colors.colorT2,
+                  margin: 0,
+                  fontFamily: fontFamily,
+                  fontSize: "22px",
+                  fontStyle: "italic",
+                  lineHeight: "1.2em",
                   flex: 1,
-                }
-  }
+                }}
               >
-    { activity.state }
-    </p>
-            )
-}
-</div>
-  </foreignObject>
-  </>
+                {activity.state}
+              </p>
+            )}
+          </div>
+        </foreignObject>
+      </>
     );
   },
 };

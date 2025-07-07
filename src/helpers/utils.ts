@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import { LRUCache } from "mnemonist";
 
 const mimeTypeMap: { [key: string]: string } = {
   png: "image/png",
@@ -7,13 +8,17 @@ const mimeTypeMap: { [key: string]: string } = {
   gif: "image/gif",
 };
 
+const cache = new LRUCache<string, string>(String, String, 1000)
+
 /**
  * Converts a URI to a Base64 string.
  * If the URI is a local file, it will be read using `fs.readFile`, otherwise it will be fetched.
  * @param uri The URI to convert.
  */
 export async function URItoBase64(uri: string) {
-  if (!uri) {return null}
+  if (!uri) { return null }
+  const cached = cache.get(uri);
+  if (cached) return cached;
   const ext = uri.split('.').pop();
   if (uri.startsWith('./')) {
     const buffer = await fs.readFile(uri);
@@ -23,7 +28,9 @@ export async function URItoBase64(uri: string) {
   const res = await fetch(uri);
   const buffer = await res.arrayBuffer();
   const contentType = res.headers.get("content-type");
-  return `data:${contentType};base64,${Buffer.from(buffer).toString("base64")}`;
+  const out = `data:${contentType};base64,${Buffer.from(buffer).toString("base64")}`;
+  cache.set(uri, out);
+  return out;
 }
 
 export function prettyDuration(duration: number) {

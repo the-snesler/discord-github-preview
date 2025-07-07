@@ -30,7 +30,7 @@ export const name: DisplayableComponent<string | null> = {
         >
           {user.displayName}
         </text>
-        <foreignObject x={40} y={y + bannerHeight + 93 + 50} height={30} width={620}>
+        <foreignObject x={40} y={y + bannerHeight + 93 + 50} height={40} width={620}>
           <div
             // @ts-ignore
             xmlns="http://www.w3.org/1999/xhtml"

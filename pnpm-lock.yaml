@@ -32,6 +32,9 @@ importers:
       express:
         specifier: '>=4.20.0'
         version: 4.21.2
+      mnemonist:
+        specifier: ^0.40.3
+        version: 0.40.3
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -1863,6 +1866,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mnemonist@0.40.3:
+    resolution: {integrity: sha512-Vjyr90sJ23CKKH/qPAgUKicw/v6pRoamxIEDFOF8uSgFME7DqPRpHgRTejWVjkdGg5dXj0/NyxZHZ9bcjH+2uQ==}
+
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
 
@@ -1904,6 +1910,9 @@ packages:
   object-inspect@1.13.2:
     resolution: {integrity: sha512-IRZSRuzJiynemAXPYtPe5BoI/RESNYR7TYm50MC5Mqbd3Jmw5y790sErYw3V6SryFJD64b74qQQs9wn5Bg/k3g==}
     engines: {node: '>= 0.4'}
+
+  obliterator@2.0.5:
+    resolution: {integrity: sha512-42CPE9AhahZRsMNslczq0ctAEtqk8Eka26QofnqC346BZdHDySk3LWka23LI7ULIw11NmltpiLagIq8gBozxTw==}
 
   on-finished@2.4.1:
     resolution: {integrity: sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==}
@@ -4648,6 +4657,10 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
+  mnemonist@0.40.3:
+    dependencies:
+      obliterator: 2.0.5
+
   ms@2.0.0: {}
 
   ms@2.1.2: {}
@@ -4687,6 +4700,8 @@ snapshots:
       path-key: 3.1.1
 
   object-inspect@1.13.2: {}
+
+  obliterator@2.0.5: {}
 
   on-finished@2.4.1:
     dependencies:
