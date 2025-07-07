@@ -24,7 +24,7 @@ export const discordDebug: RequestHandler = async (req, res, next) => {
     }
     
     // Force add the About Me for testing
-    const options: CardOptions = {
+    const options = {
       animate: false,
       width: 500,
       aboutMe: "This is a test about me section",
@@ -33,7 +33,7 @@ export const discordDebug: RequestHandler = async (req, res, next) => {
       accentColor: "#99AAB5", // Discord grey
       hideDecoration: false,
       hideSpotify: false,
-    }
+    } as CardOptions;
     
     const card = await makeCard(user, options);
     res.set('Content-Type', 'image/svg+xml')
