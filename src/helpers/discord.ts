@@ -56,7 +56,6 @@ export async function fetchUserInfo(client: Client<true>, userID: string, animat
   const avatarDecorationURL = member.user.avatarDecorationData ? getAvatarDecorationURL(client, member.user.avatarDecorationData.asset, roundImageSize(width / 4), animated) : null;
   const bannerURL = member.user.bannerURL({ size: roundImageSize(width), extension: "webp", forceStatic: !animated }) || null;
   // unfortunately, bots are not allowed to fetch the profile endpoint, which contains the nitro profile color and bio
-  console.log(rawResponse)
   const userProperties: UserProperties = {
     username: member.user.username,
     displayName: member.nickname || member.user.displayName,

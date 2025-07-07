@@ -469,6 +469,7 @@
           nitroColorsDiv.style.display = 'none';
           customColorsDiv.style.display = 'none';
         }
+        generatePreview();
       }
       themeRadios.forEach(radio => radio.addEventListener('change', updateThemeControls));
       updateThemeControls();
@@ -578,9 +579,6 @@
             previewImage.style.opacity = '1';
           });
       }
-      document.getElementById('controlsColumn').addEventListener('input', function () {
-        generatePreview();
-      });
 
       // Sync color pickers with text inputs
       primaryColorPicker.addEventListener('input', function () {

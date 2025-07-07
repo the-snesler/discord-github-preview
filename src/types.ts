@@ -20,7 +20,11 @@ export interface CardOptions {
   theme: "dark" | "light" | "custom" | "nitroDark" | "nitroLight";
   primaryColor: string;
   accentColor: string;
-  customColors?: ColorTheme;
+  colorB1: string;
+  colorB2: string;
+  colorB3: string;
+  colorT1: string;
+  colorT2: string;
 }
 
 export interface ActivityDisplay {
