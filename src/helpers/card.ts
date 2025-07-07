@@ -42,14 +42,11 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
     colors = { ...lightColors };
   } else if (options.theme === "custom") {
     colors = {
-      ...darkColors,
-      ...{
-        colorB1: options.colorB1,
-        colorB2: options.colorB2,
-        colorB3: options.colorB3,
-        colorT1: options.colorT1,
-        colorT2: options.colorT2,
-      },
+      colorB1: options.colorB1,
+      colorB2: options.colorB2,
+      colorB3: options.colorB3,
+      colorT1: options.colorT1,
+      colorT2: options.colorT2,
     }
   }
   const useNitroTheme = isNitroProfile(options.theme);
