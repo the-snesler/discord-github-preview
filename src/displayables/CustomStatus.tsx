@@ -38,6 +38,7 @@ export const customStatus: DisplayableComponent<string | null> = {
               gap: "10px",
               boxSizing: "border-box",
               width: "max-content",
+              maxWidth: "100%",
             }}
           >
             {hasCustomEmoji && (

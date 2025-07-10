@@ -39,6 +39,10 @@ export const SVGCard: React.FC<SVGCardProps> = ({
       : "offline"
   ) as keyof typeof statusColors;
   const useNitroTheme = isNitroProfile(options.theme);
+  let discordIconColor = colors.colorB2;
+  if (useNitroTheme && banner) {
+    discordIconColor = options.primaryColor;
+  }
 
   return (
     <svg
@@ -165,11 +169,7 @@ export const SVGCard: React.FC<SVGCardProps> = ({
       </g>
 
       {/* Discord Icon */}
-      <path
-        fill={useNitroTheme ? options.primaryColor : colors.colorB1}
-        transform="translate(645 15) scale(0.3)"
-        d={discordPath}
-      />
+      <path fill={discordIconColor} transform="translate(645 15) scale(0.3)" d={discordPath} />
 
       {displayables.map((displayable, index) => {
         const { props, render: Render } = displayable;
