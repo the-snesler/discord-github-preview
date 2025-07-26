@@ -153,7 +153,9 @@ export const SVGCard: React.FC<SVGCardProps> = ({
           cy={bannerHeight + 60}
           r="30"
           style={{
-            fill: mixColors(colors.colorB1, options.primaryColor || colors.colorB1, 0.85),
+            fill: useNitroTheme
+              ? mixColors(colors.colorB1, options.primaryColor, 0.85)
+              : colors.colorB1,
           }}
         />
         <rect
