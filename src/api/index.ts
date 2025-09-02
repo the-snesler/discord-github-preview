@@ -88,18 +88,23 @@ const ParamsSchema = z.object({
   }
 });
 
+const errorSvg = (
+  errorMessage: string
+) => `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="200" viewBox="0 0 512 200">
+    <rect width="512" height="200" rx="15" fill="#ff4444"/>
+    <text x="20" y="30" font-family="Arial, sans-serif" font-size="16" fill="white" font-weight="bold">Error:</text>
+    <text x="20" y="50" font-family="Arial, sans-serif" font-size="12" fill="white">${errorMessage}</text>
+  </svg>`;
+
 export const discordUser: RequestHandler = async (req, res, next) => {
   const client = await readyClient;
   const id = req.params.id;
   const { success, data: options, error } = ParamsSchema.safeParse(req.query);
   if (!success) {
-    const errorMessage = error.issues.map(e => `<tspan x="20" dy="1.2em">${e.message}</tspan>`).join("");
-    const errorSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="200" viewBox="0 0 512 200">
-      <rect width="512" height="200" fill="#ff4444"/>
-      <text x="20" y="30" font-family="Arial, sans-serif" font-size="16" fill="white" font-weight="bold">Error:</text>
-      <text x="20" y="50" font-family="Arial, sans-serif" font-size="12" fill="white">${errorMessage}</text>
-    </svg>`;
-    res.set('Content-Type', 'image/svg+xml').status(400).send(errorSvg);
+    const errorMessage = error.issues
+      .map((e) => `<tspan x="20" dy="1.2em">${e.message}</tspan>`)
+      .join("");
+    res.set("Content-Type", "image/svg+xml").status(400).send(errorSvg(errorMessage));
     return;
   }
   if (!validateId(id)) {
@@ -116,13 +121,16 @@ export const discordUser: RequestHandler = async (req, res, next) => {
       user.bannerURL = URItoBase64(options.banner);
     }
     const card = await makeCard(user, options);
-    res.set('Content-Type', 'image/svg+xml')
-      .status(200)
-      .send(card);
+    res.set("Content-Type", "image/svg+xml").status(200).send(card);
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Error";
+    res
+      .set("Content-Type", "image/svg+xml")
+      .status(400)
+      .send(errorSvg(`<tspan x="20" dy="1.2em">${errorMessage}</tspan>`));
     next(error);
   }
-}
+};
 
 export const discordUsername: RequestHandler = async (req, res, next) => {
   const client = await readyClient;

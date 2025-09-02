@@ -82,11 +82,11 @@ export const spotifyActivity: DisplayableComponent<string | null> = {
               <rect x="30" y={y + 10} width="120" height="120" rx="6" />
             </clipPath>
             <g clipPath={`url(#albumArtClip-${uniqueId})`}>
-              <image xlinkHref={albumArtBase64} x="30" y="${y + 10}" height="120" width="120" />
+              <image xlinkHref={albumArtBase64} x="30" y={y + 10} height="120" width="120" />
             </g>
           </>
         ) : (
-          <rect x="30" y="${y + 10}" width="120" height="120" rx="6" style={{ fill: "#333;" }} />
+          <rect x="30" y={y + 10} width="120" height="120" rx="6" style={{ fill: "#333" }} />
         )}
         <rect
           x={smallCenter[0] - 22}
@@ -113,14 +113,14 @@ export const spotifyActivity: DisplayableComponent<string | null> = {
           x={textX}
           y={textY}
         >
-          ${sanitizeString(songName)}
+          {sanitizeString(songName)}
         </text>
         <text
           style={{ fill: colors.colorT2, fontFamily, fontSize: "18px", whiteSpace: "pre" }}
-          x="${textX}"
-          y="${textY + 30}"
+          x={textX}
+          y={textY + 30}
         >
-          by ${sanitizeString(artistName)}
+          by {sanitizeString(artistName)}
         </text>
         <text
           style={{
@@ -133,9 +133,9 @@ export const spotifyActivity: DisplayableComponent<string | null> = {
           x={textX}
           y={textY + 52}
         >
-          on ${sanitizeString(albumName)}
+          on {sanitizeString(albumName)}
         </text>
-        ${progressBar}
+        {progressBar}
       </g>
     );
   },
