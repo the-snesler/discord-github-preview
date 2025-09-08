@@ -1,6 +1,7 @@
 services:
   api:
-    build: .
+    image: ghcr.io/the-snesler/discord-github-preview:latest
+    # build: . # Uncomment this line if you want to build the image locally
     ports:
       - "3000:3000"
     env_file: .env
