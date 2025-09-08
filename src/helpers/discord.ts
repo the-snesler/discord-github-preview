@@ -21,7 +21,8 @@ export interface UserProperties {
 }
 
 export const validateId = (id: string) => {
-  return id.match(/^[0-9]{17,19}$/);
+  // typically 17-19 digits. Invalid IDs won't work regardless, so this should only function as an early exit.
+  return id.match(/^[0-9]{17,}$/);
 }
 
 export function roundImageSize(size: number): 64 | 128 | 256 | 512 | 1024 {

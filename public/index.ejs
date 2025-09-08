@@ -492,9 +492,9 @@
 
       function generatePreview() {
         const userId = userIdInput.value.trim();
-        // Allow 17, 18, or 19 digit numbers
-        if (!/^\d{17,19}$/.test(userId)) {
-          alert('Please enter a valid Discord User ID (17-19 digits).');
+        // typically 17-19 digits. Since it's also checked on the backend, we can be less strict
+        if (!/^\d{17,}$/.test(userId)) {
+          alert('Please enter a valid Discord User ID.');
           return;
         }
 
