@@ -492,7 +492,9 @@
 
       function generatePreview() {
         const userId = userIdInput.value.trim();
-        if (!userId || isNaN(userId) || !(userId.length == 18 || userId.length == 17)) {
+        // Allow 17, 18, or 19 digit numbers
+        if (!/^\d{17,19}$/.test(userId)) {
+          alert('Please enter a valid Discord User ID (17-19 digits).');
           return;
         }
 
