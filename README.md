@@ -13,6 +13,13 @@ Right now, it'll display:
 - Avatar decorations (but they won't animate)
 - A custom About Me section and one of a number of color themes (Bots aren't allowed to see your bio or Nitro colors).
 
+## Examples in the Wild
+
+Want to see how others are using this? Check out these real-world implementations:
+
+- **In a GitHub Profile**: See it embedded in [the-snesler's profile README](https://github.com/the-snesler/the-snesler/blob/88f356b04816c1a2ce24efc0ef26dea13a0fdaa3/README.md?plain=1#L5)
+- **On a Website**: See it integrated into [tsuni.dev's homepage](https://github.com/the-snesler/tsuni.dev/blob/c1b31e7991c71b04686b2622348e8c82af86669f/src/pages/index.astro#L33)
+
 ## Screenshots
 
 <p align="center">
