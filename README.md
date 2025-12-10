@@ -34,7 +34,11 @@ The simplest way is by using my hosted instance, but you can also host your own.
 5. Customize your profile preview with the available options
 6. Click "Generate Preview" to see the result
 7. Copy the generated URL using the "Copy URL" button
-8. Paste the URL into your GitHub README or website
+8. Paste the URL into your GitHub profile README or website
+
+> [Here's a guide on how to add a README to your GitHub profile.](https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme) Once you've gotten to the text editor, paste in the "Markdown URL"
+>
+> You can also add the image link part ("Raw URL") to any service that accepts image URLs like... Wordpress?
 
 ### How to get your Discord User ID
 
