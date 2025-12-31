@@ -18,9 +18,7 @@ app.get("/", (req, res) => {
     inviteUrl: process.env.DISCORD_GUILD_INVITE || "https://discord.gg/W59fcbydeG",
   });
 });
-app.get("/styles.css", (req, res) => {
-  res.sendFile("styles.css", { root: "./public" });
-});
+app.use(express.static("./public"));
 
 app.get("/api/ping", discordSelf);
 app.get("/api/user/:id", cache(process.env.NODE_ENV === 'development' ? '1 second' : '30 seconds'), discordUser);
