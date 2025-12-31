@@ -132,23 +132,65 @@ export const discordUser: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const discordUsername: RequestHandler = async (req, res, next) => {
+export const discordIDToUsername: RequestHandler = async (req, res, next) => {
   const client = await readyClient;
   const id = req.params.id;
-  
+
   if (!validateId(id)) {
     res.status(400).send("Invalid ID");
     return;
   }
-  
+
   try {
     const user = await fetchUserInfo(client, id, false, 0);
     if (!user) {
       res.status(404).send("User not found");
       return;
     }
-    
+
     res.status(200).json({ username: user.username });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const discordUsernameToID: RequestHandler = async (req, res, next) => {
+  const client = await readyClient;
+  const username = req.params.username;
+
+  if (!username || username.length < 2) {
+    res.status(400).json({ error: "Username must be at least 2 characters" });
+    return;
+  }
+
+  try {
+    const guildID = process.env.DISCORD_GUILD_ID as string;
+    const guild = client.guilds.cache.get(guildID);
+
+    if (!guild) {
+      res.status(500).json({ error: "Guild not found" });
+      return;
+    }
+
+    // Search by username or display name (case-insensitive)
+    // Remove @ if present
+    const searchTerm = username.replace(/^@/, '').toLowerCase();
+    const member = guild.members.cache.find(m =>
+      m.user.username.toLowerCase() === searchTerm ||
+      m.user.displayName.toLowerCase() === searchTerm ||
+      m.nickname?.toLowerCase() === searchTerm
+    );
+
+    if (!member) {
+      res.status(404).json({ error: "User not found in server" });
+      return;
+    }
+
+    res.status(200).json({
+      id: member.id,
+      username: member.user.username,
+      displayName: member.nickname || member.user.displayName
+    });
   } catch (error) {
     next(error);
   }

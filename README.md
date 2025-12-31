@@ -30,11 +30,10 @@ The simplest way is by using my hosted instance, but you can also host your own.
 1. You need to be in the same server as the bot for it to work, so you should [join my Discord server](https://discord.gg/W59fcbydeG)
 2. Right-click on the server icon and navigate to "Privacy settings". Make sure your "activity privacy" is set to ON for the server or else the bot won't be able to see your game activity, just your custom status.
 3. Visit the web interface at https://dsc-readme.tsuni.dev
-4. Enter your Discord User ID in the input field (see below for how to get this)
+4. Enter your Discord username in the input field and press the "Lookup" button
 5. Customize your profile preview with the available options
-6. Click "Generate Preview" to see the result
-7. Copy the generated URL using the "Copy URL" button
-8. Paste the URL into your GitHub profile README or website
+6. Copy the generated URL using the "Copy URL" button
+7. Paste the URL into your GitHub profile README or website
 
 > [Here's a guide on how to add a README to your GitHub profile.](https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme) Once you've gotten to the text editor, paste in the "Markdown URL"
 >
@@ -42,11 +41,12 @@ The simplest way is by using my hosted instance, but you can also host your own.
 
 ### How to get your Discord User ID
 
-It's a number that looks like 214167454291722241. There are two ways to find this:
+If you're making your URL manually, you'll need your Discord User ID. It's a number that looks like 214167454291722241. There are three ways to find this:
 
+- The web UI has a lookup feature to help find your User ID, but you need to be in the same guild as the bot. Just enter your Discord username and press "Lookup", and it should fill in your User ID for you.
 - Mention yourself in a message, but put a backslash (`\`) before the mention. Then send the message and copy the numbers:<br />
   ![Discord_lYicGfP1qd](https://github.com/user-attachments/assets/12aacd86-fd3a-421d-a45e-e8b20c2c5c4a)
-- Turn on User Settings > Advanced > Developer Mode, then click on your profile picture in the bottom corner of the Discord client and press "Copy User ID"
+- In the Discord settings, turn on User Settings > Advanced > Developer Mode, then click on your profile picture in the bottom-left corner of the client and press "Copy User ID"
 
 ## Customizations
 

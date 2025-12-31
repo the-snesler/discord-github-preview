@@ -229,6 +229,11 @@
       const [rawUrl, setRawUrl] = useState('');
       const [previewOpacity, setPreviewOpacity] = useState(1);
 
+      // Username lookup state
+      const [lookupUsername, setLookupUsername] = useState('');
+      const [lookupLoading, setLookupLoading] = useState(false);
+      const [lookupError, setLookupError] = useState('');
+
       // Track last fetched username to avoid redundant API calls
       const usernameCache = useRef({ id: '', username: '' });
 
@@ -302,6 +307,35 @@
         }
       }, [markdownUrl]);
 
+      // Username lookup handler
+      const handleUsernameLookup = useCallback(async () => {
+        if (!lookupUsername || lookupUsername.length < 2) {
+          setLookupError('Username must be at least 2 characters');
+          return;
+        }
+
+        setLookupLoading(true);
+        setLookupError('');
+
+        try {
+          const response = await fetch(`/api/lookup/${encodeURIComponent(lookupUsername)}`);
+          const data = await response.json();
+
+          if (!response.ok) {
+            setLookupError(data.error || 'User not found');
+            return;
+          }
+
+          setUserId(data.id);
+          setLookupError('');
+          setLookupUsername(''); // Clear the lookup field
+        } catch (error) {
+          setLookupError('Failed to lookup username');
+        } finally {
+          setLookupLoading(false);
+        }
+      }, [lookupUsername]);
+
       // Auto-regenerate preview with debounce when form changes
       useEffect(() => {
         const timeout = setTimeout(() => {
@@ -331,7 +365,29 @@
                 ⚠️ Before starting, <a href="${inviteUrl}" target="_blank">join the Discord server</a> so the bot can access your profile information.
               </b></p>
               <div class="section">
-                <span class="label">User ID</span>
+                <span class="label">Lookup by username:</span>
+                <form onSubmit=${(e) => { e.preventDefault(); handleUsernameLookup(); }} style="display: flex; gap: 8px;">
+                  <input
+                    type="text"
+                    value=${lookupUsername}
+                    onInput=${(e) => setLookupUsername(e.target.value)}
+                    placeholder="Enter Discord username"
+                    style="flex: 1; margin-bottom: 0;"
+                  />
+                  <button
+                    type="submit"
+                    disabled=${lookupLoading}
+                    style="width: auto; padding: 12px 20px; margin-bottom: 0;"
+                  >
+                    ${lookupLoading ? 'Looking up...' : 'Lookup'}
+                  </button>
+                </form>
+                ${lookupError && html`
+                  <div style="color: #ff6b6b; font-size: 13px; margin-top: 8px;">
+                    ${lookupError}
+                  </div>
+                `}
+                <span class="label" style="margin-top: 8px;">Or enter User ID</span>
                 <input
                   type="text"
                   value=${userId}
