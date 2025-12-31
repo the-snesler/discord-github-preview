@@ -7,13 +7,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="importmap">
     {
       "imports": {
         "preact": "https://esm.sh/preact@10.23.1",
         "preact/": "https://esm.sh/preact@10.23.1/",
-        "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact"
+        "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact",
+        "react-colorful": "https://esm.sh/react-colorful@5.6.1?external=preact&alias=react:preact/compat"
       }
     }
   </script>
@@ -32,25 +34,55 @@
   <script type="module">
     import { html, render } from 'htm/preact';
     import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
+    import { HexColorPicker } from 'react-colorful';
 
     const { defaultUserId, inviteUrl } = window.__CONFIG__;
 
-    // Reusable ColorInput component
-    function ColorInput({ value, onChange, label }) {
-      const handlePickerChange = (e) => {
-        onChange(e.target.value.toUpperCase());
-      };
+    // Reusable ColorInput component with Discord-style popup picker
+    function ColorInput({ value, onChange }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const containerRef = useRef(null);
 
-      const handleTextChange = (e) => {
-        onChange(e.target.value);
-      };
+      // Close picker when clicking outside
+      useEffect(() => {
+        if (!isOpen) return;
+        const handler = (e) => {
+          if (containerRef.current && !containerRef.current.contains(e.target)) {
+            setIsOpen(false);
+          }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+      }, [isOpen]);
 
+      // Normalize color value for the picker
       const pickerValue = /^#[0-9A-Fa-f]{6}$/i.test(value) ? value : '#000000';
 
       return html`
-        <div class="color-input-group">
-          <input type="color" value=${pickerValue} onInput=${handlePickerChange} />
-          <input type="text" value=${value} onInput=${handleTextChange} placeholder="#RRGGBB" />
+        <div class="color-picker-container" ref=${containerRef}>
+          <div
+            class="color-swatch"
+            style=${{ backgroundColor: pickerValue }}
+            onClick=${() => setIsOpen(!isOpen)}
+          ></div>
+          ${isOpen && html`
+            <div class="color-picker-popup">
+              <${HexColorPicker}
+                color=${pickerValue}
+                onChange=${(c) => onChange(c.toUpperCase())}
+              />
+              <div class="color-picker-input">
+                <span class="color-picker-hash">#</span>
+                <input
+                  type="text"
+                  value=${value.replace(/^#/, '')}
+                  onInput=${(e) => onChange('#' + e.target.value.toUpperCase())}
+                  placeholder="RRGGBB"
+                  maxlength="6"
+                />
+              </div>
+            </div>
+          `}
         </div>
       `;
     }
@@ -140,10 +172,10 @@
       if (state.overrideBanner && state.bannerUrl) {
         params.append('banner', state.bannerUrl);
       }
-      if (state.hideDecoration) {
+      if (!state.enableDecoration) {
         params.append('hideDecoration', 'true');
       }
-      if (state.hideSpotify) {
+      if (!state.enableSpotify) {
         params.append('hideSpotify', 'true');
       }
 
@@ -175,8 +207,8 @@
       const [userId, setUserId] = useState(defaultUserId);
       const [enableAboutMe, setEnableAboutMe] = useState(false);
       const [aboutMe, setAboutMe] = useState('');
-      const [hideDecoration, setHideDecoration] = useState(false);
-      const [hideSpotify, setHideSpotify] = useState(false);
+      const [enableDecoration, setEnableDecoration] = useState(true);
+      const [enableSpotify, setEnableSpotify] = useState(true);
       const [theme, setTheme] = useState('dark');
       const [nitroColors, setNitroColors] = useState({ primary: '#8180ff', accent: '#fe80c0' });
       const [customColors, setCustomColors] = useState({
@@ -213,8 +245,8 @@
           userId,
           enableAboutMe,
           aboutMe,
-          hideDecoration,
-          hideSpotify,
+          enableDecoration,
+          enableSpotify,
           theme,
           nitroColors,
           customColors,
@@ -254,7 +286,7 @@
           if (!silent) alert('Failed to generate preview. Please check the User ID and try again.');
           setPreviewOpacity(1);
         }
-      }, [userId, enableAboutMe, aboutMe, hideDecoration, hideSpotify, theme, nitroColors, customColors, width, overrideBanner, bannerUrl]);
+      }, [userId, enableAboutMe, aboutMe, enableDecoration, enableSpotify, theme, nitroColors, customColors, width, overrideBanner, bannerUrl]);
 
       // Copy URL handler
       const copyUrl = useCallback(async () => {
@@ -292,13 +324,12 @@
       return html`
         <div class="container">
           <h1>Discord Profile Preview Generator</h1>
-          <p class="description">Generate a preview of your Discord profile for use on GitHub or other platforms.</p>
-          <p class="callout callout-warn">
-            ⚠️ Before starting, <a href="${inviteUrl}" target="_blank">join the Discord server</a> so the bot can access your profile information.
-          </p>
-
+          
           <div class="controls">
             <div class="column">
+              <p class="callout callout-warn"><b>
+                ⚠️ Before starting, <a href="${inviteUrl}" target="_blank">join the Discord server</a> so the bot can access your profile information.
+              </b></p>
               <div class="section">
                 <span class="label">User ID</span>
                 <input
@@ -320,34 +351,32 @@
                   <label for="enableAboutMe">Enable About Me</label>
                 </div>
 
-                <span class="label">About Me</span>
-                <textarea
-                  value=${aboutMe}
-                  onInput=${(e) => setAboutMe(e.target.value)}
-                  placeholder="About me content..."
-                  disabled=${!enableAboutMe}
-                />
-              </div>
-
-              <div class="section">
+                ${enableAboutMe && html`
+                  <span class="label">About Me</span>
+                  <textarea
+                    value=${aboutMe}
+                    onInput=${(e) => setAboutMe(e.target.value)}
+                    placeholder="About me content..."
+                  />
+                `}
                 <div class="checkbox-container">
                   <input
                     type="checkbox"
-                    id="hideDecoration"
-                    checked=${hideDecoration}
-                    onChange=${(e) => setHideDecoration(e.target.checked)}
+                    id="enableDecoration"
+                    checked=${enableDecoration}
+                    onChange=${(e) => setEnableDecoration(e.target.checked)}
                   />
-                  <label for="hideDecoration">Hide Avatar Decoration</label>
+                  <label for="enableDecoration">Enable Avatar Decoration</label>
                 </div>
 
                 <div class="checkbox-container">
                   <input
                     type="checkbox"
-                    id="hideSpotify"
-                    checked=${hideSpotify}
-                    onChange=${(e) => setHideSpotify(e.target.checked)}
+                    id="enableSpotify"
+                    checked=${enableSpotify}
+                    onChange=${(e) => setEnableSpotify(e.target.checked)}
                   />
-                  <label for="hideSpotify">Hide Spotify Activity</label>
+                  <label for="enableSpotify">Enable Spotify Activity</label>
                 </div>
               </div>
 
@@ -397,7 +426,7 @@
               </div>
             </div>
 
-            <div class="column">
+            <div class="column sticky">
               <div class="section">
                 <span class="label">Preview</span>
                 <div class="preview">

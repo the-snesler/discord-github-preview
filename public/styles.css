@@ -73,6 +73,12 @@ h1::after {
     box-shadow 0.2s;
 }
 
+.column.sticky {
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+}
+
 .preview {
   background-color: var(--discord-bg-tertiary);
   padding: 20px;
@@ -208,24 +214,97 @@ button:disabled {
   margin-bottom: 0;
 }
 
-.color-input-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* Color picker container */
+.color-picker-container {
+  position: relative;
+  display: inline-block;
+  margin-right: 8px;
   margin-bottom: 12px;
 }
 
-.color-input-group input[type="color"] {
-  width: 50px;
+.color-swatch {
+  width: 40px;
   height: 40px;
-  padding: 2px;
   border-radius: var(--discord-radius);
+  border: 2px solid var(--discord-border);
   cursor: pointer;
-  margin-bottom: 0;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
 }
 
-.color-input-group input[type="text"] {
-  margin-bottom: 0;
+.color-swatch:hover {
+  border-color: var(--discord-primary);
+}
+
+.color-picker-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  margin-top: 8px;
+  padding: 16px;
+  background: var(--discord-bg-tertiary);
+  border-radius: var(--discord-radius);
+  border: 1px solid var(--discord-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.color-picker-input {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  background: var(--discord-input-bg);
+  border: 1px solid var(--discord-border);
+  border-radius: var(--discord-radius);
+  overflow: hidden;
+}
+
+.color-picker-hash {
+  padding: 8px 0 8px 12px;
+  color: var(--discord-text-muted);
+  font-size: 14px;
+  user-select: none;
+}
+
+.color-picker-input input {
+  flex: 1;
+  padding: 8px 12px 8px 4px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  font-family: monospace;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.color-picker-input input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Override react-colorful defaults for Discord theme */
+.react-colorful {
+  width: 200px;
+  height: auto;
+}
+
+.react-colorful__saturation {
+  height: 150px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  border-bottom: none;
+}
+
+.react-colorful__hue {
+  height: 14px;
+  border-radius: 7px;
+}
+
+.react-colorful__pointer {
+  width: 18px;
+  height: 18px;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .copy-success {
@@ -273,6 +352,6 @@ button:disabled {
 }
 
 .callout-warn a {
-  color: #981313;
+  color: #7d1010;
   text-decoration: underline;
 }
