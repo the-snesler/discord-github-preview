@@ -6,705 +6,433 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --discord-primary: #5865F2;
-      --discord-primary-hover: #4752c4;
-      --discord-bg: #313338;
-      --discord-bg-secondary: #2B2D31;
-      --discord-bg-tertiary: #1E1F22;
-      --discord-text: #F2F3F5;
-      --discord-text-muted: #B5BAC1;
-      --discord-input-bg: #1E1F22;
-      --discord-border: #232428;
-      --discord-success: #3BA55C;
-      --discord-radius: 8px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-      background-color: var(--discord-bg);
-      color: var(--discord-text);
-      line-height: 1.6;
-      padding: 30px 20px;
-      margin: 0;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      color: var(--discord-primary);
-      margin-bottom: 30px;
-      font-size: 2rem;
-      text-align: center;
-      position: relative;
-      display: inline-block;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    h1::after {
-      content: '';
-      display: block;
-      height: 3px;
-      width: 60px;
-      background: var(--discord-primary);
-      margin: 10px auto 0;
-      border-radius: 3px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-
-    .column {
-      flex: 1;
-      min-width: 300px;
-      background-color: var(--discord-bg-secondary);
-      padding: 24px;
-      border-radius: var(--discord-radius);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      border: 1px solid var(--discord-border);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .preview {
-      background-color: var(--discord-bg-tertiary);
-      padding: 20px;
-      border-radius: var(--discord-radius);
-      margin-bottom: 20px;
-      border: 1px solid var(--discord-border);
-      overflow: hidden;
-    }
-
-    .preview img {
-      max-width: 100%;
-      height: auto;
-      border-radius: calc(var(--discord-radius) - 2px);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-    }
-
-    .preview:hover img {
-      transform: scale(1.02);
-    }
-
-    input,
-    textarea,
-    button,
-    select {
-      width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 18px;
-      background-color: var(--discord-input-bg);
-      border: 1px solid var(--discord-border);
-      border-radius: var(--discord-radius);
-      color: var(--discord-text);
-      font-family: inherit;
-      font-size: 14px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      outline: none;
-      border-color: var(--discord-primary);
-      box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.2);
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    input:disabled,
-    textarea:disabled {
-      background-color: var(--discord-bg-tertiary);
-      color: var(--discord-text-muted);
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    button {
-      background-color: var(--discord-primary);
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.2s, transform 0.1s;
-      color: white;
-      border: none;
-      font-size: 15px;
-    }
-
-    button:hover {
-      background-color: var(--discord-primary-hover);
-    }
-
-    button:active {
-      transform: translateY(1px);
-    }
-
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .checkbox-container input {
-      width: 18px;
-      height: 18px;
-      margin-right: 10px;
-      margin-bottom: 0;
-      cursor: pointer;
-      accent-color: var(--discord-primary);
-    }
-
-    .checkbox-container label {
-      cursor: pointer;
-    }
-
-    .result-box {
-      background-color: var(--discord-input-bg);
-      padding: 15px;
-      border-radius: var(--discord-radius);
-      word-break: break-all;
-      text-align: left;
-      margin-top: 10px;
-      border: 1px solid var(--discord-border);
-      font-family: monospace;
-      font-size: 13px;
-      color: var(--discord-text-muted);
-    }
-
-    .label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: var(--discord-text-muted);
-      font-size: 14px;
-    }
-
-    .section {
-      margin-bottom: 24px;
-    }
-
-    .section:last-child {
-      margin-bottom: 0;
-    }
-
-    .color-input-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .color-input-group input[type="color"] {
-      width: 50px;
-      height: 40px;
-      padding: 2px;
-      border-radius: var(--discord-radius);
-      cursor: pointer;
-    }
-
-    .copy-success {
-      color: var(--discord-success);
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .controls {
-        flex-direction: column;
-      }
-
-      .column {
-        min-width: 100%;
+    <script type="importmap">
+    {
+      "imports": {
+        "preact": "https://esm.sh/preact@10.23.1",
+        "preact/": "https://esm.sh/preact@10.23.1/",
+        "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact"
       }
     }
-
-    .description {
-      font-size: 16px;
-      color: var(--discord-text-muted);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .callout {
-      background-color: var(--discord-bg-secondary);
-      padding: 15px;
-      border-radius: var(--discord-radius);
-      margin-bottom: 20px;
-      color: var(--discord-text-muted);
-      font-size: 14px;
-    }
-
-    .callout a {
-      color: var(--discord-primary);
-      text-decoration: none;
-    }
-
-    .callout a:hover {
-      text-decoration: underline;
-    }
-
-    .callout-warn {
-      background-color: #ff6b6b;
-      color: #000000;
-    }
-
-    .callout-warn a {
-      color: #981313;
-      text-decoration: underline;
-    }
-  </style>
+  </script>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Discord Profile Preview Generator</h1>
-    <p class="description">Generate a preview of your Discord profile for use on GitHub or other platforms.</p>
-    <p class="callout callout-warn">⚠️ Before starting, <a href="<%= inviteUrl %>" target="_blank">join the
-        Discord server</a> so the bot
-      can access your profile information.</p>
+  <div id="app"></div>
 
-    <div class="controls">
-      <div class="column" id="controlsColumn">
-        <div class="section">
-          <span class="label">User ID</span>
-          <input type="text" id="userId" placeholder="Discord User ID" value="<%= defaultUserId %>">
+  <script>
+    window.__CONFIG__ = {
+      defaultUserId: '<%= defaultUserId %>',
+      inviteUrl: '<%= inviteUrl %>'
+    };
+  </script>
+
+  <script type="module">
+    import { html, render } from 'htm/preact';
+    import { useState, useEffect, useCallback, useRef } from 'preact/hooks';
+
+    const { defaultUserId, inviteUrl } = window.__CONFIG__;
+
+    // Reusable ColorInput component
+    function ColorInput({ value, onChange, label }) {
+      const handlePickerChange = (e) => {
+        onChange(e.target.value.toUpperCase());
+      };
+
+      const handleTextChange = (e) => {
+        onChange(e.target.value);
+      };
+
+      const pickerValue = /^#[0-9A-Fa-f]{6}$/i.test(value) ? value : '#000000';
+
+      return html`
+        <div class="color-input-group">
+          <input type="color" value=${pickerValue} onInput=${handlePickerChange} />
+          <input type="text" value=${value} onInput=${handleTextChange} placeholder="#RRGGBB" />
         </div>
+      `;
+    }
 
-        <div class="section">
-          <div class="checkbox-container">
-            <input type="checkbox" id="enableAboutMe">
-            <label for="enableAboutMe">Enable About Me</label>
-          </div>
+    // Theme section component
+    function ThemeSection({ theme, setTheme, nitroColors, setNitroColors, customColors, setCustomColors }) {
+      const themes = [
+        { value: 'dark', label: 'Dark (default)' },
+        { value: 'light', label: 'Light' },
+        { value: 'nitroDark', label: 'Nitro Dark' },
+        { value: 'nitroLight', label: 'Nitro Light' },
+        { value: 'custom', label: 'Custom' }
+      ];
 
-          <span class="label">About Me</span>
-          <textarea id="aboutMe" placeholder="About me content..." disabled></textarea>
-        </div>
+      const showNitro = theme === 'nitroDark' || theme === 'nitroLight';
+      const showCustom = theme === 'custom';
 
-        <div class="section">
-          <div class="checkbox-container">
-            <input type="checkbox" id="hideDecoration">
-            <label for="hideDecoration">Hide Avatar Decoration</label>
-          </div>
-
-          <div class="checkbox-container">
-            <input type="checkbox" id="hideSpotify">
-            <label for="hideSpotify">Hide Spotify Activity</label>
-          </div>
-        </div>
-
+      return html`
         <div class="section">
           <span class="label">Theme</span>
           <div style="margin-bottom: 15px;">
-            <div class="checkbox-container">
-              <input type="radio" id="darkTheme" name="themeType" value="dark" checked>
-              <label for="darkTheme">Dark (default)</label>
-            </div>
-            <div class="checkbox-container">
-              <input type="radio" id="lightTheme" name="themeType" value="light">
-              <label for="lightTheme">Light</label>
-            </div>
-            <div class="checkbox-container">
-              <input type="radio" id="nitroDark" name="themeType" value="nitroDark">
-              <label for="nitroDark">Nitro Dark</label>
-            </div>
-            <div class="checkbox-container">
-              <input type="radio" id="nitroLight" name="themeType" value="nitroLight">
-              <label for="nitroLight">Nitro Light</label>
-            </div>
-            <div class="checkbox-container">
-              <input type="radio" id="customTheme" name="themeType" value="custom">
-              <label for="customTheme">Custom</label>
-            </div>
+            ${themes.map(t => html`
+              <div class="checkbox-container" key=${t.value}>
+                <input
+                  type="radio"
+                  id=${t.value + 'Theme'}
+                  name="themeType"
+                  value=${t.value}
+                  checked=${theme === t.value}
+                  onChange=${() => setTheme(t.value)}
+                />
+                <label for=${t.value + 'Theme'}>${t.label}</label>
+              </div>
+            `)}
           </div>
-          <div id="nitroColors" style="display: none; margin-bottom: 15px;">
-            <span class="label">Nitro Colors</span>
-            <div class="color-input-group">
-              <input type="color" id="primaryColorPicker" value="#8180ff">
-              <input type="text" id="primaryColorText" value="#8180ff" placeholder="#RRGGBB">
+
+          ${showNitro && html`
+            <div style="margin-bottom: 15px;">
+              <span class="label">Nitro Colors</span>
+              <${ColorInput}
+                value=${nitroColors.primary}
+                onChange=${(v) => setNitroColors({ ...nitroColors, primary: v })}
+              />
+              <${ColorInput}
+                value=${nitroColors.accent}
+                onChange=${(v) => setNitroColors({ ...nitroColors, accent: v })}
+              />
             </div>
-            <div class="color-input-group">
-              <input type="color" id="accentColorPicker" value="#fe80c0">
-              <input type="text" id="accentColorText" value="#fe80c0" placeholder="#RRGGBB">
+          `}
+
+          ${showCustom && html`
+            <div style="margin-bottom: 15px;">
+              <span class="label">Custom Colors</span>
+              <${ColorInput}
+                value=${customColors.b1}
+                onChange=${(v) => setCustomColors({ ...customColors, b1: v })}
+              />
+              <${ColorInput}
+                value=${customColors.b2}
+                onChange=${(v) => setCustomColors({ ...customColors, b2: v })}
+              />
+              <${ColorInput}
+                value=${customColors.b3}
+                onChange=${(v) => setCustomColors({ ...customColors, b3: v })}
+              />
+              <${ColorInput}
+                value=${customColors.t1}
+                onChange=${(v) => setCustomColors({ ...customColors, t1: v })}
+              />
+              <${ColorInput}
+                value=${customColors.t2}
+                onChange=${(v) => setCustomColors({ ...customColors, t2: v })}
+              />
             </div>
-          </div>
-          <div id="customColors" style="display: none; margin-bottom: 15px;">
-            <span class="label">Custom Colors</span>
-            <div class="color-input-group">
-              <input type="color" id="colorB1Picker" value="#111214">
-              <input type="text" id="colorB1Text" value="#111214" placeholder="#RRGGBB">
-            </div>
-            <div class="color-input-group">
-              <input type="color" id="colorB2Picker" value="#313338">
-              <input type="text" id="colorB2Text" value="#313338" placeholder="#RRGGBB">
-            </div>
-            <div class="color-input-group">
-              <input type="color" id="colorB3Picker" value="#505059">
-              <input type="text" id="colorB3Text" value="#505059" placeholder="#RRGGBB">
-            </div>
-            <div class="color-input-group">
-              <input type="color" id="colorT1Picker" value="#ffffff">
-              <input type="text" id="colorT1Text" value="#ffffff" placeholder="#RRGGBB">
-            </div>
-            <div class="color-input-group">
-              <input type="color" id="colorT2Picker" value="#d2d6d8">
-              <input type="text" id="colorT2Text" value="#d2d6d8" placeholder="#RRGGBB">
-            </div>
-          </div>
+          `}
         </div>
+      `;
+    }
 
-        <div class="section">
-          <span class="label">Image Options</span>
-          <div style="margin-bottom: 12px;">
-            <label class="label" for="widthInput">Width (px)</label>
-            <input type="number" id="widthInput" min="128" max="2048" step="1" value="512"
-              placeholder="Width in pixels">
-          </div>
-          <!-- <div class="checkbox-container">
-            <input type="checkbox" id="animatedToggle">
-            <label for="animatedToggle">Animated (avatar/banner/decoration)
-              <span style="display:block; font-weight:600; color:var(--discord-text); font-size:12px; margin-top:2px;">GitHub will not
-                display animated images and has a file size limit. This option increases the file size by 20x, so use it only if you
-                understand the implications.</span>
-            </label>
-          </div> -->
-          <div class="checkbox-container">
-            <input type="checkbox" id="overrideBanner">
-            <label for="overrideBanner">Override Banner</label>
-          </div>
+    // Build preview URL from state
+    function buildPreviewUrl(state) {
+      const params = new URLSearchParams();
 
-          <span class="label">Banner URL</span>
-          <input type="text" id="bannerUrl" placeholder="https://example.com/banner.png" disabled>
-        </div>
-
-        <button id="generatePreview">Generate Preview</button>
-      </div>
-
-      <div class="column">
-        <div class="section">
-          <span class="label">Preview</span>
-          <div class="preview">
-            <img id="previewImage" src="/api/user/<%= defaultUserId %>" alt="Discord Profile Preview">
-          </div>
-        </div>
-
-        <div class="section">
-          <span class="label">Markdown URL (for GitHub)</span>
-          <div class="result-box" id="previewUrl"></div>
-        </div>
-
-        <div class="section">
-          <span class="label">Raw URL</span>
-          <div class="result-box" id="rawUrl"></div>
-        </div>
-
-        <button id="copyUrl">Copy Markdown URL</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Elements
-      const userIdInput = document.getElementById('userId');
-      const enableAboutMeCheckbox = document.getElementById('enableAboutMe');
-      const aboutMeTextarea = document.getElementById('aboutMe');
-      const overrideBannerCheckbox = document.getElementById('overrideBanner');
-      const bannerUrlInput = document.getElementById('bannerUrl');
-      const hideDecorationCheckbox = document.getElementById('hideDecoration');
-      const hideSpotifyCheckbox = document.getElementById('hideSpotify');
-
-      // Theme elements
-      const themeRadios = document.getElementsByName('themeType');
-      const nitroColorsDiv = document.getElementById('nitroColors');
-      const customColorsDiv = document.getElementById('customColors');
-      const primaryColorPicker = document.getElementById('primaryColorPicker');
-      const primaryColorText = document.getElementById('primaryColorText');
-      const accentColorPicker = document.getElementById('accentColorPicker');
-      const accentColorText = document.getElementById('accentColorText');
-      const colorB1Picker = document.getElementById('colorB1Picker');
-      const colorB1Text = document.getElementById('colorB1Text');
-      const colorB2Picker = document.getElementById('colorB2Picker');
-      const colorB2Text = document.getElementById('colorB2Text');
-      const colorB3Picker = document.getElementById('colorB3Picker');
-      const colorB3Text = document.getElementById('colorB3Text');
-      const colorT1Picker = document.getElementById('colorT1Picker');
-      const colorT1Text = document.getElementById('colorT1Text');
-      const colorT2Picker = document.getElementById('colorT2Picker');
-      const colorT2Text = document.getElementById('colorT2Text');
-
-      const generateButton = document.getElementById('generatePreview');
-      const previewImage = document.getElementById('previewImage');
-      const previewUrlDisplay = document.getElementById('previewUrl');
-      const rawUrlDisplay = document.getElementById('rawUrl');
-      const copyUrlButton = document.getElementById('copyUrl');
-
-      // Enable/disable fields based on checkboxes
-      enableAboutMeCheckbox.addEventListener('change', function () {
-        aboutMeTextarea.disabled = !this.checked;
-        if (this.checked) {
-          aboutMeTextarea.focus();
-        }
-      });
-
-      overrideBannerCheckbox.addEventListener('change', function () {
-        bannerUrlInput.disabled = !this.checked;
-        if (this.checked) {
-          bannerUrlInput.focus();
-        }
-      });
-
-      // Theme color controls
-      function updateThemeControls() {
-        let selectedTheme;
-        themeRadios.forEach(radio => {
-          if (radio.checked) selectedTheme = radio.value;
-        });
-        if (selectedTheme === 'nitroDark' || selectedTheme === 'nitroLight') {
-          nitroColorsDiv.style.display = 'block';
-          customColorsDiv.style.display = 'none';
-        } else if (selectedTheme === 'custom') {
-          customColorsDiv.style.display = 'block';
-          nitroColorsDiv.style.display = 'none';
-        } else {
-          nitroColorsDiv.style.display = 'none';
-          customColorsDiv.style.display = 'none';
-        }
-        generatePreview();
+      if (state.enableAboutMe && state.aboutMe) {
+        params.append('aboutMe', state.aboutMe);
       }
-      themeRadios.forEach(radio => radio.addEventListener('change', updateThemeControls));
-      updateThemeControls();
+      if (state.overrideBanner && state.bannerUrl) {
+        params.append('banner', state.bannerUrl);
+      }
+      if (state.hideDecoration) {
+        params.append('hideDecoration', 'true');
+      }
+      if (state.hideSpotify) {
+        params.append('hideSpotify', 'true');
+      }
 
-      function generatePreview() {
-        const userId = userIdInput.value.trim();
-        // typically 17-19 digits. Since it's also checked on the backend, we can be less strict
+      params.append('theme', state.theme);
+
+      if (state.theme === 'nitroDark' || state.theme === 'nitroLight') {
+        params.append('primaryColor', state.nitroColors.primary.replace(/^#/, ''));
+        params.append('accentColor', state.nitroColors.accent.replace(/^#/, ''));
+      } else if (state.theme === 'custom') {
+        params.append('colorB1', state.customColors.b1.replace(/^#/, ''));
+        params.append('colorB2', state.customColors.b2.replace(/^#/, ''));
+        params.append('colorB3', state.customColors.b3.replace(/^#/, ''));
+        params.append('colorT1', state.customColors.t1.replace(/^#/, ''));
+        params.append('colorT2', state.customColors.t2.replace(/^#/, ''));
+      }
+
+      if (state.width) {
+        params.append('width', state.width.toString());
+      }
+
+      const base = `/api/user/${state.userId}`;
+      const queryString = params.toString();
+      return queryString ? `${base}?${queryString}` : base;
+    }
+
+    // Main App component
+    function App() {
+      // Form state
+      const [userId, setUserId] = useState(defaultUserId);
+      const [enableAboutMe, setEnableAboutMe] = useState(false);
+      const [aboutMe, setAboutMe] = useState('');
+      const [hideDecoration, setHideDecoration] = useState(false);
+      const [hideSpotify, setHideSpotify] = useState(false);
+      const [theme, setTheme] = useState('dark');
+      const [nitroColors, setNitroColors] = useState({ primary: '#8180ff', accent: '#fe80c0' });
+      const [customColors, setCustomColors] = useState({
+        b1: '#111214',
+        b2: '#313338',
+        b3: '#505059',
+        t1: '#ffffff',
+        t2: '#d2d6d8'
+      });
+      const [width, setWidth] = useState('512');
+      const [overrideBanner, setOverrideBanner] = useState(false);
+      const [bannerUrl, setBannerUrl] = useState('');
+
+      // UI state
+      const [copySuccess, setCopySuccess] = useState(false);
+      const [previewSrc, setPreviewSrc] = useState(`/api/user/${defaultUserId}`);
+      const [markdownUrl, setMarkdownUrl] = useState('');
+      const [rawUrl, setRawUrl] = useState('');
+      const [previewOpacity, setPreviewOpacity] = useState(1);
+
+      // Track last fetched username to avoid redundant API calls
+      const usernameCache = useRef({ id: '', username: '' });
+
+      // Generate preview handler
+      const generatePreview = useCallback(async (silent = false) => {
         if (!/^\d{17,}$/.test(userId)) {
-          alert('Please enter a valid Discord User ID.');
+          if (!silent) alert('Please enter a valid Discord User ID.');
           return;
         }
 
-        // Add loading state
-        generateButton.textContent = 'Generating...';
-        generateButton.disabled = true;
+        setPreviewOpacity(0.5);
 
-        // Build URL
-        let url = `/api/user/${userId}`;
-        const params = new URLSearchParams();
+        const state = {
+          userId,
+          enableAboutMe,
+          aboutMe,
+          hideDecoration,
+          hideSpotify,
+          theme,
+          nitroColors,
+          customColors,
+          width,
+          overrideBanner,
+          bannerUrl
+        };
 
-        if (enableAboutMeCheckbox.checked && aboutMeTextarea.value) {
-          params.append('aboutMe', aboutMeTextarea.value);
-        }
+        const url = buildPreviewUrl(state);
 
-        if (overrideBannerCheckbox.checked && bannerUrlInput.value) {
-          params.append('banner', bannerUrlInput.value);
-        }
-
-        if (hideDecorationCheckbox.checked) {
-          params.append('hideDecoration', 'true');
-        }
-
-        if (hideSpotifyCheckbox.checked) {
-          params.append('hideSpotify', 'true');
-        }
-
-        // Add theme parameters
-        let selectedTheme;
-        themeRadios.forEach(radio => {
-          if (radio.checked) selectedTheme = radio.value;
-        });
-        params.append('theme', selectedTheme);
-        if (selectedTheme === 'nitroDark' || selectedTheme === 'nitroLight') {
-          params.append('primaryColor', primaryColorText.value.replace(/^#/, ''));
-          params.append('accentColor', accentColorText.value.replace(/^#/, ''));
-        } else if (selectedTheme === 'custom') {
-          params.append('colorB1', colorB1Text.value.replace(/^#/, ''));
-          params.append('colorB2', colorB2Text.value.replace(/^#/, ''));
-          params.append('colorB3', colorB3Text.value.replace(/^#/, ''));
-          params.append('colorT1', colorT1Text.value.replace(/^#/, ''));
-          params.append('colorT2', colorT2Text.value.replace(/^#/, ''));
-        }
-
-        // Add width and animated params
-        const widthInput = document.getElementById('widthInput');
-        const animatedToggle = document.getElementById('animatedToggle');
-        if (widthInput && widthInput.value) {
-          params.append('width', widthInput.value);
-        }
-        if (animatedToggle && animatedToggle.checked) {
-          params.append('animate', 'true');
-        }
-
-        if (params.toString()) {
-          url += `?${params.toString()}`;
-        }
-
-        // Update preview
-        previewImage.style.opacity = '0.5';
-
-        // First fetch the username
-        fetch(`/api/username/${userId}`)
-          .then(response => {
+        try {
+          // Only fetch username if userId changed
+          let username = usernameCache.current.username;
+          if (usernameCache.current.id !== userId) {
+            const response = await fetch(`/api/username/${userId}`);
             if (!response.ok) throw new Error('Failed to fetch username');
-            return response.json();
-          })
-          .then(data => {
-            const username = data.username;
+            const data = await response.json();
+            username = data.username;
+            usernameCache.current = { id: userId, username };
+          }
 
-            // Create new image to handle load event
-            const newImage = new Image();
-            newImage.onload = function () {
-              previewImage.src = url;
-              previewImage.style.opacity = '1';
-
-              // Format the URL as requested
-              const fullUrl = window.location.origin + url;
-              const markdownUrl = `[![${username}'s Discord status](${fullUrl})](https://github.com/TetraTsunami/discord-github-preview)`;
-              previewUrlDisplay.textContent = markdownUrl;
-              rawUrlDisplay.textContent = fullUrl;
-
-              generateButton.textContent = 'Generate Preview';
-              generateButton.disabled = false;
-            };
-
-            newImage.onerror = function () {
-              alert('Failed to generate image. Please check the User ID and try again.');
-              generateButton.textContent = 'Generate Preview';
-              generateButton.disabled = false;
-              previewImage.style.opacity = '1';
-            };
-
-            newImage.src = url;
-          })
-          .catch(error => {
-            console.error('Error fetching username:', error);
-            generateButton.textContent = 'Generate Preview';
-            generateButton.disabled = false;
-            previewImage.style.opacity = '1';
+          // Preload image
+          await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = url;
           });
-      }
 
-      // Sync color pickers with text inputs
-      primaryColorPicker.addEventListener('input', function () {
-        primaryColorText.value = this.value.toUpperCase();
-      });
-      primaryColorText.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          primaryColorPicker.value = this.value;
+          const fullUrl = window.location.origin + url;
+          setPreviewSrc(url);
+          setRawUrl(fullUrl);
+          setMarkdownUrl(`[![${username}'s Discord status](${fullUrl})](https://github.com/TetraTsunami/discord-github-preview)`);
+          setPreviewOpacity(1);
+        } catch (error) {
+          console.error('Error:', error);
+          if (!silent) alert('Failed to generate preview. Please check the User ID and try again.');
+          setPreviewOpacity(1);
         }
-      });
-      accentColorPicker.addEventListener('input', function () {
-        accentColorText.value = this.value.toUpperCase();
-      });
-      accentColorText.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          accentColorPicker.value = this.value;
-        }
-      });
-      colorB1Picker.addEventListener('input', function () {
-        colorB1Text.value = this.value.toUpperCase();
-      });
-      colorB1Text.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorB1Picker.value = this.value;
-        }
-      });
-      colorB2Picker.addEventListener('input', function () {
-        colorB2Text.value = this.value.toUpperCase();
-      });
-      colorB2Text.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorB2Picker.value = this.value;
-        }
-      });
-      colorB3Picker.addEventListener('input', function () {
-        colorB3Text.value = this.value.toUpperCase();
-      });
-      colorB3Text.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorB3Picker.value = this.value;
-        }
-      });
-      colorT1Picker.addEventListener('input', function () {
-        colorT1Text.value = this.value.toUpperCase();
-      });
-      colorT1Text.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorT1Picker.value = this.value;
-        }
-      });
-      colorT2Picker.addEventListener('input', function () {
-        colorT2Text.value = this.value.toUpperCase();
-      });
-      colorT2Text.addEventListener('input', function () {
-        if (this.value.match(/^#[0-9A-Fa-f]{6}$/i)) {
-          colorT2Picker.value = this.value;
-        }
-      });
+      }, [userId, enableAboutMe, aboutMe, hideDecoration, hideSpotify, theme, nitroColors, customColors, width, overrideBanner, bannerUrl]);
 
-      // Generate preview
-      generateButton.addEventListener('click', generatePreview);
+      // Copy URL handler
+      const copyUrl = useCallback(async () => {
+        if (!markdownUrl) return;
 
-      // Copy URL
-      copyUrlButton.addEventListener('click', function () {
-        const urlText = previewUrlDisplay.textContent;
-        if (!urlText) return;
-
-        navigator.clipboard.writeText(urlText)
-          .then(() => {
-            copyUrlButton.textContent = 'Copied!';
-            copyUrlButton.classList.add('copy-success');
-            setTimeout(() => {
-              copyUrlButton.textContent = 'Copy Markdown URL';
-              copyUrlButton.classList.remove('copy-success');
-            }, 2000);
-          })
-          .catch(err => {
-            console.error('Failed to copy: ', err);
-            alert('Failed to copy URL');
-          });
-      });
-
-      // Initialize preview URL with default format for initial ID
-      fetch(`/api/username/${userIdInput.value.trim()}`)
-        .then(response => response.json())
-        .then(data => {
-          const initialUrl = `/api/user/${userIdInput.value.trim()}`;
-          const fullUrl = window.location.origin + initialUrl;
-          previewUrlDisplay.textContent = `[![${data.username}'s Discord status](${fullUrl})](https://github.com/TetraTsunami/discord-github-preview)`;
-          rawUrlDisplay.textContent = fullUrl;
-        })
-        .catch(error => {
-          console.error('Error fetching initial username:', error);
-          const initialUrl = `/api/user/${userIdInput.value.trim()}`;
-          previewUrlDisplay.textContent = window.location.origin + initialUrl;
-          rawUrlDisplay.textContent = window.location.origin + initialUrl;
-        });
-
-      // Add smooth transitions for image
-      previewImage.style.transition = 'opacity 0.3s ease';
-
-      // Add keyboard shortcuts
-      document.addEventListener('keydown', function (e) {
-        if (e.ctrlKey && e.key === 'Enter') {
-          generateButton.click();
+        try {
+          await navigator.clipboard.writeText(markdownUrl);
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+          alert('Failed to copy URL');
         }
-      });
-    });
+      }, [markdownUrl]);
+
+      // Auto-regenerate preview with debounce when form changes
+      useEffect(() => {
+        const timeout = setTimeout(() => {
+          generatePreview(true);
+        }, 500);
+        return () => clearTimeout(timeout);
+      }, [generatePreview]);
+
+      // Keyboard shortcut for manual refresh
+      useEffect(() => {
+        const handler = (e) => {
+          if (e.ctrlKey && e.key === 'Enter') {
+            generatePreview(false);
+          }
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+      }, [generatePreview]);
+
+      return html`
+        <div class="container">
+          <h1>Discord Profile Preview Generator</h1>
+          <p class="description">Generate a preview of your Discord profile for use on GitHub or other platforms.</p>
+          <p class="callout callout-warn">
+            ⚠️ Before starting, <a href="${inviteUrl}" target="_blank">join the Discord server</a> so the bot can access your profile information.
+          </p>
+
+          <div class="controls">
+            <div class="column">
+              <div class="section">
+                <span class="label">User ID</span>
+                <input
+                  type="text"
+                  value=${userId}
+                  onInput=${(e) => setUserId(e.target.value)}
+                  placeholder="Discord User ID"
+                />
+              </div>
+
+              <div class="section">
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    id="enableAboutMe"
+                    checked=${enableAboutMe}
+                    onChange=${(e) => setEnableAboutMe(e.target.checked)}
+                  />
+                  <label for="enableAboutMe">Enable About Me</label>
+                </div>
+
+                <span class="label">About Me</span>
+                <textarea
+                  value=${aboutMe}
+                  onInput=${(e) => setAboutMe(e.target.value)}
+                  placeholder="About me content..."
+                  disabled=${!enableAboutMe}
+                />
+              </div>
+
+              <div class="section">
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    id="hideDecoration"
+                    checked=${hideDecoration}
+                    onChange=${(e) => setHideDecoration(e.target.checked)}
+                  />
+                  <label for="hideDecoration">Hide Avatar Decoration</label>
+                </div>
+
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    id="hideSpotify"
+                    checked=${hideSpotify}
+                    onChange=${(e) => setHideSpotify(e.target.checked)}
+                  />
+                  <label for="hideSpotify">Hide Spotify Activity</label>
+                </div>
+              </div>
+
+              <${ThemeSection}
+                theme=${theme}
+                setTheme=${setTheme}
+                nitroColors=${nitroColors}
+                setNitroColors=${setNitroColors}
+                customColors=${customColors}
+                setCustomColors=${setCustomColors}
+              />
+
+              <div class="section">
+                <span class="label">Image Options</span>
+                <div style="margin-bottom: 12px;">
+                  <label class="label" for="widthInput">Width (px)</label>
+                  <input
+                    type="number"
+                    id="widthInput"
+                    min="128"
+                    max="2048"
+                    step="1"
+                    value=${width}
+                    onInput=${(e) => setWidth(e.target.value)}
+                    placeholder="Width in pixels"
+                  />
+                </div>
+
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    id="overrideBanner"
+                    checked=${overrideBanner}
+                    onChange=${(e) => setOverrideBanner(e.target.checked)}
+                  />
+                  <label for="overrideBanner">Override Banner</label>
+                </div>
+
+                <span class="label">Banner URL</span>
+                <input
+                  type="text"
+                  value=${bannerUrl}
+                  onInput=${(e) => setBannerUrl(e.target.value)}
+                  placeholder="https://example.com/banner.png"
+                  disabled=${!overrideBanner}
+                />
+              </div>
+            </div>
+
+            <div class="column">
+              <div class="section">
+                <span class="label">Preview</span>
+                <div class="preview">
+                  <img
+                    src=${previewSrc}
+                    alt="Discord Profile Preview"
+                    style=${{ opacity: previewOpacity }}
+                  />
+                </div>
+              </div>
+
+              <div class="section">
+                <span class="label">Markdown URL (for GitHub)</span>
+                <div class="result-box">${markdownUrl}</div>
+                <button
+                  onClick=${copyUrl}
+                  class=${copySuccess ? 'copy-success' : ''}
+                  style="margin-top: 12px;"
+                >
+                  ${copySuccess ? 'Copied!' : 'Copy Markdown URL'}
+                </button>
+              </div>
+
+              <div class="section">
+                <span class="label">Raw URL</span>
+                <div class="result-box">${rawUrl}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Mount the app
+    render(html`<${App} />`, document.getElementById('app'));
   </script>
 </body>
 
