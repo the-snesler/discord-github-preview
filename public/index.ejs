@@ -434,6 +434,27 @@
                   />
                   <label for="enableSpotify">Enable Spotify Activity</label>
                 </div>
+
+                
+                <div class="checkbox-container">
+                  <input
+                    type="checkbox"
+                    id="overrideBanner"
+                    checked=${overrideBanner}
+                    onChange=${(e) => setOverrideBanner(e.target.checked)}
+                  />
+                  <label for="overrideBanner">Override Banner</label>
+                </div>
+
+                ${overrideBanner && html`<span class="label">Banner URL</span>
+                  <input
+                    type="text"
+                    value=${bannerUrl}
+                    onInput=${(e) => setBannerUrl(e.target.value)}
+                    placeholder="https://example.com/banner.png"
+                    disabled=${!overrideBanner}
+                  />
+                `}
               </div>
 
               <${ThemeSection}
@@ -446,9 +467,8 @@
               />
 
               <div class="section">
-                <span class="label">Image Options</span>
                 <div style="margin-bottom: 12px;">
-                  <label class="label" for="widthInput">Width (px)</label>
+                  <label class="label" for="widthInput">Image Width (px)</label>
                   <input
                     type="number"
                     id="widthInput"
@@ -460,25 +480,6 @@
                     placeholder="Width in pixels"
                   />
                 </div>
-
-                <div class="checkbox-container">
-                  <input
-                    type="checkbox"
-                    id="overrideBanner"
-                    checked=${overrideBanner}
-                    onChange=${(e) => setOverrideBanner(e.target.checked)}
-                  />
-                  <label for="overrideBanner">Override Banner</label>
-                </div>
-
-                <span class="label">Banner URL</span>
-                <input
-                  type="text"
-                  value=${bannerUrl}
-                  onInput=${(e) => setBannerUrl(e.target.value)}
-                  placeholder="https://example.com/banner.png"
-                  disabled=${!overrideBanner}
-                />
               </div>
             </div>
 
