@@ -1,7 +1,7 @@
 import React from "react";
 import { UserProperties } from "../helpers/discord";
 import { BakedDisplayableComponent, CardOptions, ColorTheme } from "../types";
-import { mixColors } from "../helpers/utils";
+import { mixColors, setOpacity } from "../helpers/utils";
 import { GG_SANS_FONT_FACE } from "../helpers/fonts";
 import { statusColors } from "../helpers/themes";
 import { bannerHeight, isNitroProfile } from "../helpers/card";
@@ -39,10 +39,6 @@ export const SVGCard: React.FC<SVGCardProps> = ({
       : "offline"
   ) as keyof typeof statusColors;
   const useNitroTheme = isNitroProfile(options.theme);
-  let discordIconColor = colors.colorB2;
-  if (useNitroTheme && banner) {
-    discordIconColor = options.primaryColor;
-  }
 
   return (
     <svg
@@ -171,7 +167,9 @@ export const SVGCard: React.FC<SVGCardProps> = ({
       </g>
 
       {/* Discord Icon */}
-      <path fill={discordIconColor} transform="translate(645 15) scale(0.3)" d={discordPath} />
+      <path fill="#7778" transform="translate(645 15) scale(0.3)" style={{ 
+        filter: "invert(1) grayscale(1) brightness(2)", 
+      }} d={discordPath} />
 
       {displayables.map((displayable, index) => {
         const { props, render: Render } = displayable;
