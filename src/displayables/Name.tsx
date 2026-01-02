@@ -4,10 +4,11 @@ import { fontFamily } from "../helpers/fonts";
 import { URItoBase64 } from "../helpers/utils";
 import { getDisplayableBadges, BadgeName } from "../helpers/badges";
 import * as path from "path";
+import * as fs from "fs/promises";
 
 interface NameServerProps {
   clanBadge: string | null;
-  badges: { [key: string]: string };
+  badges: string[];
 }
 
 export const name: DisplayableComponent<NameServerProps> = {
@@ -22,25 +23,20 @@ export const name: DisplayableComponent<NameServerProps> = {
 
     // Profile badges
     const userBadges = getDisplayableBadges(user.flags, user.isAvatarAnimated);
-    const badgeImages: { [key: string]: string } = {};
 
-    for (const badgeName of userBadges) {
+    const badgePromises = userBadges.map(async (badgeName) => {
       const badgePath = path.join(process.cwd(), "src", "assets", "badges", `${badgeName}.svg`);
-      try {
-        const base64Image = await URItoBase64(badgePath);
-        if (base64Image) {
-          badgeImages[badgeName] = base64Image;
-        }
-      } catch (error) {
-        console.error(`Failed to load badge ${badgeName}:`, error);
-      }
-    }
+      // it would be silly to turn badge svgs into base64, only to embed them into an svg later. let's just read the raw svg content.
+      const badgeData = await fs.readFile(path.resolve(badgePath), 'utf-8');
+      return badgeData;
+    });
 
-    return { clanBadge, badges: badgeImages };
+    const badges = await Promise.all(badgePromises);
+
+    return { clanBadge, badges };
   },
   render: ({ user, colors, y, bannerHeight, serverProp }) => {
-    const { clanBadge, badges } = serverProp || { clanBadge: null, badges: {} };
-    const userBadges = getDisplayableBadges(user.flags, user.isAvatarAnimated);
+    const { clanBadge, badges } = serverProp || { clanBadge: null, badges: [] };
 
     // Calculate approximate width of display name for badge positioning
     const displayNameWidth = user.displayName.length * 27; // Approximate character width
@@ -62,24 +58,6 @@ export const name: DisplayableComponent<NameServerProps> = {
         >
           {user.displayName}
         </text>
-
-        {/* Profile badges next to display name */}
-        {userBadges.map((badgeName, index) => {
-          const badgeImage = badges[badgeName];
-          if (!badgeImage) return null;
-
-          return (
-            <image
-              key={badgeName}
-              href={badgeImage}
-              x={40 + displayNameWidth + 10 + (index * (badgeSize + badgeGap))}
-              y={y + bannerHeight + 93 + 40 - badgeSize + 2}
-              width={badgeSize}
-              height={badgeSize}
-            />
-          );
-        })}
-
         <foreignObject x={40} y={y + bannerHeight + 93 + 50} height={40} width={620}>
           <div
             // @ts-ignore
@@ -114,6 +92,24 @@ export const name: DisplayableComponent<NameServerProps> = {
                 <span style={{ fontWeight: "600" }}>{user.serverTag?.tag}</span>
               </span>
             )}
+            <style>
+              {`.badge-container svg {
+                width: 100%;
+                height: 100%;
+              }`}
+            </style>
+            <div style={{display: "flex",}}>
+              {badges.map((badgeRawSVG, index) => {
+                return (
+                  <span
+                    key={index}
+                    className="badge-container"
+                    style={{ width: `${badgeSize}px`, height: `${badgeSize}px`, display: "inline-block" }}
+                    dangerouslySetInnerHTML={{ __html: badgeRawSVG }}
+                  />
+                );
+              })}
+            </div>
           </div>
         </foreignObject>
       </g>
