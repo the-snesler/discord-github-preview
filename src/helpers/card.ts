@@ -75,7 +75,8 @@ export const makeCard = async (user: UserProperties, options: CardOptions) => {
   for (let i = 0; i < filteredActivities.length; i++) {
     const activity = filteredActivities[i];
     prerenderProps.activity = activity;
-    const displayable = activityMatchers.find(displayable => displayable.matches ? displayable.matches(prerenderProps) : true) as BakedDisplayableComponent<any>;
+    const matcher = activityMatchers.find(displayable => displayable.matches ? displayable.matches(prerenderProps) : true);
+    const displayable = { ...matcher } as BakedDisplayableComponent<any>;
     const serverProp = displayable.fetchServerProp ? displayable.fetchServerProp(prerenderProps) : null;
     displayable.props = { user, options, colors, bannerHeight, serverProp: null, activity, y: currentHeight }
     currentHeight += displayable.height ? displayable.height + 10 : 0;
