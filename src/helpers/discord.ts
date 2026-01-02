@@ -1,4 +1,4 @@
-import { Client, Presence } from "discord.js";
+import { Client, Presence, UserFlagsBitField } from "discord.js";
 import { URItoBase64 } from "./utils";
 
 export interface ServerTag {
@@ -14,10 +14,12 @@ export interface UserProperties {
   avatarURL: Promise<string | null>;
   avatarDecorationURL: Promise<string | null> | null;
   isDecorationAnimated: boolean;
+  isAvatarAnimated: boolean;
   bannerURL: Promise<string | null> | null;
   accentColor: string | null;
   presence: Presence | null;
   serverTag?: ServerTag;
+  flags: UserFlagsBitField | null;
 }
 
 export const validateId = (id: string) => {
@@ -54,9 +56,13 @@ export async function fetchUserInfo(client: Client<true>, userID: string, animat
   const avatarURL = member.displayAvatarURL({ size: roundImageSize(width / 4), extension: "webp", forceStatic: !animated }) || member.user.defaultAvatarURL
   const avatarDecorationAsset = member.user.avatarDecorationData?.asset || null;
   const isDecorationAnimated = (animated && avatarDecorationAsset?.includes('a_')) || false;
+  const isAvatarAnimated = member.user.avatar?.startsWith('a_') || false;
   const avatarDecorationURL = member.user.avatarDecorationData ? getAvatarDecorationURL(client, member.user.avatarDecorationData.asset, roundImageSize(width / 4), animated) : null;
   const bannerURL = member.user.bannerURL({ size: roundImageSize(width), extension: "webp", forceStatic: !animated }) || null;
   // unfortunately, bots are not allowed to fetch the profile endpoint, which contains the nitro profile color and bio
+  // Fetch full user data to get flags
+  const fullUser = await member.user.fetch();
+
   const userProperties: UserProperties = {
     username: member.user.username,
     displayName: member.nickname || member.user.displayName,
@@ -64,10 +70,12 @@ export async function fetchUserInfo(client: Client<true>, userID: string, animat
     avatarURL: avatarURL ? URItoBase64(avatarURL) : Promise.resolve(""),
     avatarDecorationURL: avatarDecorationURL ? URItoBase64(avatarDecorationURL) : null,
     isDecorationAnimated,
+    isAvatarAnimated,
     bannerURL: bannerURL ? URItoBase64(bannerURL) : null,
     accentColor: member.user.hexAccentColor || null,
     presence: member.presence,
     serverTag: await rawResponse.then(res => res.primary_guild),
+    flags: fullUser.flags,
   }
   return userProperties;
 }

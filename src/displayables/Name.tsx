@@ -2,19 +2,51 @@ import React from "react";
 import { DisplayableComponent } from "../types";
 import { fontFamily } from "../helpers/fonts";
 import { URItoBase64 } from "../helpers/utils";
+import { getDisplayableBadges, BadgeName } from "../helpers/badges";
+import * as path from "path";
 
-export const name: DisplayableComponent<string | null> = {
+interface NameServerProps {
+  clanBadge: string | null;
+  badges: { [key: string]: string };
+}
+
+export const name: DisplayableComponent<NameServerProps> = {
   fetchServerProp: async ({ user }) => {
     // Server tags
-    let clanBadge: Promise<string | null> = Promise.resolve(null);
+    let clanBadge: string | null = null;
     if (user.serverTag && user.serverTag.identity_guild_id && user.serverTag.badge) {
-      clanBadge = URItoBase64(
+      clanBadge = await URItoBase64(
         `https://cdn.discordapp.com/clan-badges/${user.serverTag.identity_guild_id}/${user.serverTag.badge}.png?size=32`
       );
     }
-    return clanBadge;
+
+    // Profile badges
+    const userBadges = getDisplayableBadges(user.flags, user.isAvatarAnimated);
+    const badgeImages: { [key: string]: string } = {};
+
+    for (const badgeName of userBadges) {
+      const badgePath = path.join(process.cwd(), "src", "assets", "badges", `${badgeName}.svg`);
+      try {
+        const base64Image = await URItoBase64(badgePath);
+        if (base64Image) {
+          badgeImages[badgeName] = base64Image;
+        }
+      } catch (error) {
+        console.error(`Failed to load badge ${badgeName}:`, error);
+      }
+    }
+
+    return { clanBadge, badges: badgeImages };
   },
-  render: ({ user, colors, y, bannerHeight, serverProp: clanBadge }) => {
+  render: ({ user, colors, y, bannerHeight, serverProp }) => {
+    const { clanBadge, badges } = serverProp || { clanBadge: null, badges: {} };
+    const userBadges = getDisplayableBadges(user.flags, user.isAvatarAnimated);
+
+    // Calculate approximate width of display name for badge positioning
+    const displayNameWidth = user.displayName.length * 27; // Approximate character width
+    const badgeSize = 32;
+    const badgeGap = 8;
+
     return (
       <g>
         <text
@@ -30,6 +62,24 @@ export const name: DisplayableComponent<string | null> = {
         >
           {user.displayName}
         </text>
+
+        {/* Profile badges next to display name */}
+        {userBadges.map((badgeName, index) => {
+          const badgeImage = badges[badgeName];
+          if (!badgeImage) return null;
+
+          return (
+            <image
+              key={badgeName}
+              href={badgeImage}
+              x={40 + displayNameWidth + 10 + (index * (badgeSize + badgeGap))}
+              y={y + bannerHeight + 93 + 40 - badgeSize + 2}
+              width={badgeSize}
+              height={badgeSize}
+            />
+          );
+        })}
+
         <foreignObject x={40} y={y + bannerHeight + 93 + 50} height={40} width={620}>
           <div
             // @ts-ignore
