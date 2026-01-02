@@ -11,7 +11,12 @@ interface Props {
 }
 
 export function aboutMeHeight(text: string) {
-  return Math.max(120, 70 + Math.ceil(text.length / 40) * 24);
+  const lines = text.split("\n");
+  let lineCount = 0;
+  for (const line of lines) {
+    lineCount += Math.max(1, Math.ceil(line.length / 60));
+  }
+  return 45 + lineCount * 26;
 }
 
 export default function AboutMe({ content, colors, startY }: Props): ReactNode {
@@ -33,10 +38,9 @@ export default function AboutMe({ content, colors, startY }: Props): ReactNode {
         style={{
           background: colors.colorB2,
           fontFamily: fontFamily,
-          padding: "3px 20px",
+          padding: "7px 20px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
           borderRadius: "15px",
           width: "100%",
           height: "100%",
