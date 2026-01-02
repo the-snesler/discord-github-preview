@@ -39,7 +39,7 @@
   "license": "ISC",
   "scripts": {
     "clean": "rimraf dist/",
-    "copy-files": "copyfiles -u 1 src/**/*.woff2 dist/src",
+    "copy-files": "copyfiles -u 1 \"src/**/*.{woff2,svg}\" dist/src",
     "build": "pnpm clean && tsc --build --clean && tsc && pnpm copy-files",
     "dev": "tsx watch ./src/server.ts",
     "start": "node ./dist/src/server.js",
