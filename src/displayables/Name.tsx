@@ -24,12 +24,9 @@ export const name: DisplayableComponent<NameServerProps> = {
     // Profile badges
     const userBadges = getDisplayableBadges(user.flags, user.isAvatarAnimated);
 
-    const badgePromises = userBadges.map(async (badgeName) => {
-      const badgePath = path.join(process.cwd(), "src", "assets", "badges", `${badgeName}.svg`);
-      // it would be silly to turn badge svgs into base64, only to embed them into an svg later. let's just read the raw svg content.
-      const badgeData = await fs.readFile(path.resolve(badgePath), 'utf-8');
-      return badgeData;
-    });
+    const badgePromises = userBadges.map(
+      async (badgeName) => await fs.readFile(path.join(__dirname, `../assets/badges/${badgeName}.svg`), "utf-8")
+    );
 
     const badges = await Promise.all(badgePromises);
 
@@ -98,13 +95,17 @@ export const name: DisplayableComponent<NameServerProps> = {
                 height: 100%;
               }`}
             </style>
-            <div style={{display: "flex",}}>
+            <div style={{ display: "flex" }}>
               {badges.map((badgeRawSVG, index) => {
                 return (
                   <span
                     key={index}
                     className="badge-container"
-                    style={{ width: `${badgeSize}px`, height: `${badgeSize}px`, display: "inline-block" }}
+                    style={{
+                      width: `${badgeSize}px`,
+                      height: `${badgeSize}px`,
+                      display: "inline-block",
+                    }}
                     dangerouslySetInnerHTML={{ __html: badgeRawSVG }}
                   />
                 );

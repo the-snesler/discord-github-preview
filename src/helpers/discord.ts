@@ -1,5 +1,6 @@
 import { Client, Presence, UserFlagsBitField } from "discord.js";
 import { URItoBase64 } from "./utils";
+import * as path from "path";
 
 export interface ServerTag {
   identity_guild_id: string;
@@ -91,7 +92,7 @@ export async function fetchAppIconURL(appID: string) {
   // so we'll use a local image instead.
   // This is okay because the app always converts image URLs to Base64
   if (appRPC.name === "Xbox") {
-    return "./src/xboxball.png";
+    return path.join(__dirname, "../assets/xboxball.png");
   }
   if (!appRPC || !appRPC.icon) {
     return null;
