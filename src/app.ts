@@ -1,6 +1,6 @@
 import express from "express";
 import apicache from "apicache";
-import { discordSelf, discordUser, discordIDToUsername, discordUsernameToID } from "./api";
+import { discordSelf, discordUser, discordIDToUsername, discordUsernameToID, pseudoLanyardImplementation } from "./api";
 import 'dotenv/config';
 import readyClient from "./bot";
 
@@ -24,5 +24,6 @@ app.get("/api/ping", discordSelf);
 app.get("/api/user/:id", cache(process.env.NODE_ENV === 'development' ? '1 second' : '30 seconds'), discordUser);
 app.get("/api/username/:id", cache(process.env.NODE_ENV === 'development' ? '1 second' : '30 seconds'), discordIDToUsername);
 app.get("/api/lookup/:username", discordUsernameToID);
+app.get("/api/lanyard/:id", cache(process.env.NODE_ENV === 'development' ? '1 second' : '30 seconds'), pseudoLanyardImplementation);
 
 export default app;

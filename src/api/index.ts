@@ -5,6 +5,7 @@ import { validateId, fetchUserInfo } from "../helpers/discord";
 import type { RequestHandler } from "express";
 import { URItoBase64 } from "../helpers/utils";
 import * as z from "zod/v4";
+import { discordMemberToLanyard } from "../helpers/lanyard";
 
 export const discordSelf: RequestHandler = async (req, res, next) => {
   const client = await readyClient;
@@ -195,3 +196,36 @@ export const discordUsernameToID: RequestHandler = async (req, res, next) => {
     next(error);
   }
 }
+
+/**
+ * Responds with the user's status in a format semi-compatible with https://lanyard.rest/ clients
+ * It's missing things like Spotify, some fields, and the timestamps are strings instead of numbers (!!).
+ */
+export const pseudoLanyardImplementation: RequestHandler = async (req, res, next) => {
+  const client = await readyClient;
+  const id = req.params.id;
+  const guildID = process.env.DISCORD_GUILD_ID as string;
+  
+  if (!validateId(id)) {
+    res.status(404).send({ success: false, error: { code: "user_not_monitored", message: "User not found"} });
+    return;
+  }
+
+  try {
+    const member = await client.guilds.cache.get(guildID)?.members.fetch({ user: id, force: true });
+    if (!member) {
+      return null;
+    }
+    const fullUser = await member.user.fetch();
+    if (!fullUser) {
+      res.status(404).send({ success: false, error: { code: "user_not_monitored", message: "User not found"} });
+      return;
+    }
+    const response = discordMemberToLanyard(member);
+    res.status(200).json(response);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Error";
+    res.status(400).send({ success: false, error: { code: "error", message: errorMessage } });
+    next(error);
+  }
+};
